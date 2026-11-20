@@ -78,6 +78,13 @@ test('page: the product is Shufi only. No "Jarvis" anywhere in the page, the ser
   } finally { child.kill(); }
 });
 
+test('page: no control without a backend (no mock chat, no Start over, no permission card that does nothing)', () => {
+  for (const dead of ['chat-open', 'Chat with me', 'Start over', 'Ask Shufi', 'Grant']) assert.ok(!page.includes(dead), `page must not ship "${dead}"`);
+  // the step-0 card asks for the one real first action: look at this computer (a live preflight)
+  assert.match(page, /lookAt: 'Look at this computer'/);
+  assert.match(page, /async function doScan\(\)[\s\S]{0,400}\/api\/preflight\?refresh=1/);
+});
+
 test('page: the owl is the felt photo set served from setup/assets, never a drawn stand-in', () => {
   const poses = [...page.match(/const POSES = \[([^\]]*)\]/)[1].matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
   assert.ok(poses.length >= 8);

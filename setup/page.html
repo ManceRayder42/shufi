@@ -104,6 +104,7 @@ kbd{font:500 .72rem var(--body);border:1px solid var(--stitch);border-bottom-wid
 .knot span{max-width:7.4rem;text-wrap:balance}
 .knot:hover span{color:var(--ink)}
 .knot.done b{border-style:solid;border-color:var(--amber);background:var(--amber)}
+.knot.warn b{border-style:solid;border-color:var(--amber)}
 .knot.cur b{border-style:solid;border-color:var(--orange);background:var(--bg);box-shadow:0 0 0 .22rem var(--accent-glow)}
 .knot.cur,.knot.done{color:var(--ink)}
 .knot.cur span{font-weight:600}
@@ -263,7 +264,7 @@ html{background:var(--sky-a)}
 #topic .tp-list{flex:1;min-height:0;overflow:auto;margin:0;padding:0 .2rem 0 0;list-style:none;scrollbar-width:thin}
 #leftcol.topic-on #shufi{display:none}
 .btag.fresh{--f:var(--orange);--t:var(--orange-ink);box-shadow:0 0 0 3px rgba(229,129,63,.35),0 8px 14px -8px var(--shadow);animation:freshp 2.2s ease-in-out infinite}
-.btag.fresh small{color:var(--orange-ink)}
+.btag.fresh small,.btag.fresh.lit small{color:var(--orange-ink)}
 @keyframes freshp{50%{box-shadow:0 0 0 7px rgba(229,129,63,.12),0 8px 14px -8px var(--shadow)}}
 @media (prefers-reduced-motion:reduce){.btag.fresh{animation:none}}
 /* ---------- v14: clean tree, step reveal, chat-like Shufi ---------- */
@@ -464,7 +465,7 @@ html{background:var(--sky-a)}
 .mark #brand{display:inline-block}
 
 /* owl: a letter instead of a photo for another edition */
-.sh-win .glass.letter{display:grid;place-items:center;font:600 5rem var(--display);color:var(--orange)}
+.sh-win .glass.letter #shufiImgs{display:grid;place-items:center;font:600 5.5rem var(--display);color:var(--orange)}
 #shufi-line.pop{animation:pop .3s ease-out}
 .sh-win:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
 #perm{color:var(--ink)}
@@ -541,6 +542,7 @@ body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offli
 #tp-status{font-size:.8rem;line-height:1.35;color:var(--muted);min-height:0}
 #tp-status:empty{display:none}
 #tp-status ul{margin:.25rem 0 0;padding-inline-start:1.1rem;list-style:disc}
+.tp-list>li.row .rerr,.cat-list li.row .rerr{flex:0 0 100%}
 .rerr{grid-column:1/-1;font-size:.78rem;color:#e0645a;padding:0 .2rem .3rem 3rem}
 :root[data-theme="light"] .rerr{color:#a32020}
 .rerr:empty{display:none}
@@ -549,8 +551,16 @@ body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offli
 .ibtn.is-idle{border-color:var(--line)}
 .ibtn.is-installing{display:inline-flex;gap:.4rem;align-items:center;justify-content:center}
 .rt b{overflow:hidden;text-overflow:ellipsis}
+.rt small{display:flex;gap:.3em;align-items:baseline}
+.rt small .kit,.rt small .sep{flex:none}
+.rt small .dsc{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #installlog{padding:0 .5rem;font-size:.85rem;line-height:1.4;color:var(--muted);text-align:center}
-#installlog:empty{display:none}
+#installlog:empty,#installlog-d:empty{display:none}
+#installlog-d{font-size:.85rem;line-height:1.4;color:var(--muted);padding:.1rem .2rem}
+#installlog-d ul,#installlog-d div{margin:0}
+#installlog-d ul{padding-inline-start:1.1rem;list-style:disc}
+#installlog{display:none}
+@media (max-width:700px){#installlog{display:block}#installlog:empty{display:none}#installlog-d{display:none}}
 #installlog ul{margin:.2rem auto 0;padding:0;list-style:none}
 #treebar .tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
 #treebar .tb-btn[disabled]{cursor:default}
@@ -648,7 +658,7 @@ body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offli
   <main id="main">
     <div id="leftcol">
       <aside id="shufi" aria-label="Shufi">
-        <div class="sh-stage"><button type="button" class="sh-win felt" id="sh-win"><div class="glass"><div id="shufiImgs"></div></div><span class="sill"></span></button></div>
+        <div class="sh-stage"><button type="button" class="sh-win felt" id="sh-win"><span class="glass"><span id="shufiImgs"></span></span><span class="sill"></span></button></div>
         <h1 class="sr" id="title"></h1><p class="sr" id="subtitle"></p>
         <div class="sh-who"><i></i><b id="who-name">Shufi</b><span id="who-sub"></span></div>
         <p id="shufi-line" aria-live="polite"></p>
@@ -657,6 +667,7 @@ body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offli
         <div class="you-lbl"></div>
         <div class="sh-actions"><button class="btn pri" id="primary" type="button"></button><button class="btn ghost" id="shufi-sec" type="button"></button></div>
         <div class="sh-links"><button class="lnk" id="read-more" type="button" aria-expanded="false"></button></div>
+        <div id="installlog-d" role="status" aria-live="polite"></div>
         <section id="stepform" class="felt" hidden></section>
       </aside>
       <section id="topic" class="felt" hidden></section>
@@ -696,7 +707,7 @@ const I18N = {
     s_machine: 'Your computer', s_memory: 'Your nest', s_skills: 'Skills', s_tools: 'Tools', s_workspace: 'Team workspace', s_phone: 'Phone & voice', s_finish: 'Start using it',
     optional: 'optional', setup: 'Setup', setsUp: 'sets up with you', yourReply: 'Your reply', skip: 'Skip this', notNow: 'Not now', cont: 'Continue', back: 'Back',
     readMore: 'Read more', readLess: 'Read less',
-    lookAt: 'Look at this computer', checkAgain: 'Check again', makeNest: 'Make my nest', addKit: "Add Shufi's kit", installX: 'Install {0}', skipNow: 'Skip for now', goTo: 'Go to {0}', browse: 'Browse more tools',
+    lookAt: 'Look at this computer', checkAgain: 'Check again', makeNest: 'Make my nest', addKit: "Add {0}'s kit", installX: 'Install {0}', skipNow: 'Skip for now', goTo: 'Go to {0}', browse: 'Browse more tools',
     working: 'Working…', looking: 'Looking…', makingNest: 'Making it…',
     permLine: 'First, may I look at your computer?',
     perm: [['Your AI tool will ask to approve each step.', ' Say yes, it is safe.'], ['I only touch what you pick.', ' Nothing else, nowhere else.'], ['Small helpers install in the background,', ' using few tokens.']],
@@ -704,7 +715,7 @@ const I18N = {
     scanTitle: 'This computer', scanSub0: 'Not looked at yet.', scanSub1: 'I only look. I change nothing.', found: 'Found', notHere: 'Not here', ready: 'Ready.',
     phoneChat: 'Phone chat', phoneOptional: 'Optional', phoneLinked: 'Connected',
     helper: "Tap a bundle to see what's inside and pick what you want.",
-    installAll: 'Install all', installAllBusy: 'Installing…', installAllDone: 'All installed',
+    installAll: 'Install all', installAllBusy: 'Installing…', installAllDone: 'All installed', nothingMore: 'Nothing more to install',
     allN: 'Install all {0}', backToShufi: 'Back to Shufi', backToShufiLabel: 'Back to Shufi',
     skills1: '{0} skill', skillsN: '{0} skills', tools1: '{0} tool', toolsN: '{0} tools', ofInst: '{0} of {1} installed',
     topicSay: '{0}. Tap one to see what it does.', gSkills: 'Skills', gTools: 'Tools', gAnim: 'Design › Animation',
@@ -714,11 +725,11 @@ const I18N = {
     nothingToDo: 'Everything that can be installed from here is already installed.',
     eli: 'Explain with pictures', eliWhy: 'Long explanations become a simple visual page instead of a wall of text.',
     t_core: 'Essentials', t_research: 'Research', t_notes: 'Notes', t_design: 'Design', t_build: 'Build', t_media: 'Media', t_animation: 'Animation',
-    inKit: 'In kit', inKitDetail: "in Shufi's kit", treeAria: 'A tree of topics. Each topic opens the list of skills and tools it holds.', topicsAria: 'Topics',
+    inKit: 'In kit', inKitDetail: "in the starter kit", treeAria: 'A tree of topics. Each topic opens the list of skills and tools it holds.', topicsAria: 'Topics',
     advTitle: 'Advanced · all options', advSub: 'Skip ahead: install or check anything now. It shows up in the tree.', advClose: 'Close all options', advOpen: 'All options',
-    search: 'Search skills and tools', all: 'All', kindSkill: 'Skill', kindTool: 'Tool', chipKit: "Shufi's kit", featured: 'Featured', featuredSub: 'on top of the tree',
+    search: 'Search skills and tools', all: 'All', kindSkill: 'Skill', kindTool: 'Tool', chipKit: "{0}'s kit", featured: 'Featured', featuredSub: 'on top of the tree',
     nothingMatches: 'Nothing matches “{0}”. Try “research”, “key” or a topic name.',
-    dStatus: 'Status', dLicense: 'License', dAuthor: 'Author', dNeeds: 'Needs', dSource: 'Source', dMore: 'Search more', dClose: 'Close details', dHere: 'Here is {0}. Install is one click.',
+    dStatus: 'Status', dLicense: 'License', dAuthor: 'Author', dNeeds: 'Needs', dSource: 'Source', dMore: 'Search more', dClose: 'Close details', dHere: 'Here is {0}.',
     stInstalled: 'Installed', stMissing: 'Not installed', stHand: 'Installs from its own source', stKey: 'Needs a key', stBlocked: 'Needs {0} first',
     SAY_machine: 'Let me look around your computer. I only read.',
     DONE_machine: 'Your computer is ready for me.', FIX_machine: 'One thing needs fixing before I can go on.',
@@ -727,7 +738,7 @@ const I18N = {
     SAY_tools: 'Tools live on the same branches. Tap a topic to see what it holds.', DONE_tools: 'Tools are in. Add a bundle, or just one.',
     SAY_workspace: "Let's plug in your team's workspace.", DONE_workspace: 'The team workspace is connected.',
     SAY_phone: 'Optional: want to talk to me from your phone?', DONE_phone: 'Phone is linked.',
-    SAY_finish: 'Nearly there. Open your AI tool and say “remember this”.', DONE_finish: 'All set. Come back any time, or just ask me.',
+    DONE_finish: 'All set. Open your AI tool and say “remember this”. Come back any time, or just ask me.',
     MORE_machine: 'I look at which AI coding tools are on your computer, like Claude Code, Codex and Cursor. I only read, I change nothing. That tells me where to connect your nest.',
     MORE_memory: 'The nest is one folder of plain notes. I read it at the start of every chat, in any project and any of your tools. The files are yours, and you can open them any time.',
     MORE_skills: 'Skills are things I can do for you, like researching with sources or turning a web page into clean notes. My kit is the usual set. Every skill has its own page, so you can add just one.',
@@ -735,7 +746,7 @@ const I18N = {
     MORE_workspace: 'Connect to the shared team knowledge and code.',
     MORE_phone: 'This step is optional. A private link lets you message me from your phone. You can skip it and still use everything else.',
     MORE_finish: 'Come back to this page any time: it opens right where you are now. Or skip the page and ask me in your AI tool to add tools or skills. Everything here also works from the command line.',
-    doneLine: '{0}: done. {1}', justDone: 'Done! {0} is ready.', finOpen: 'Almost there. A couple of steps are still open.',
+    finOpen: 'Almost there. A couple of steps are still open.',
     tricks: [['cheer', 'Hoo! Still here.'], ['point', 'Pick a branch, any branch.'], ['brush', 'I do love a good design.'], ['camera', 'Say cheese.'], ['key', 'Keys never leave your computer.'], ['celebrate', 'Hooray!'], ['worried', 'Whoa, easy on the clicking!']],
   },
   he: {
@@ -744,7 +755,7 @@ const I18N = {
     s_machine: 'המחשב שלכם', s_memory: 'הקן שלכם', s_skills: 'סקילים', s_tools: 'כלים', s_workspace: 'סביבת צוות', s_phone: 'טלפון וקול', s_finish: 'מתחילים להשתמש',
     optional: 'אופציונלי', setup: 'הגדרה', setsUp: 'מגדיר איתכם', yourReply: 'התשובה שלכם', skip: 'לדלג', notNow: 'לא עכשיו', cont: 'להמשיך', back: 'חזרה',
     readMore: 'קראו עוד', readLess: 'פחות',
-    lookAt: 'להציץ במחשב', checkAgain: 'לבדוק שוב', makeNest: 'ליצור את הקן', addKit: 'להוסיף את הערכה של Shufi', installX: 'להתקין את {0}', skipNow: 'לדלג בינתיים', goTo: 'לעבור אל {0}', browse: 'עוד כלים',
+    lookAt: 'להציץ במחשב', checkAgain: 'לבדוק שוב', makeNest: 'ליצור את הקן', addKit: 'להוסיף את הערכה של {0}', installX: 'להתקין את {0}', skipNow: 'לדלג בינתיים', goTo: 'לעבור אל {0}', browse: 'עוד כלים',
     working: 'עובד…', looking: 'מציץ…', makingNest: 'יוצר…',
     permLine: 'קודם, מותר לי להציץ במחשב שלכם?',
     perm: [['כלי ה-AI שלכם ישאל לאשר כל צעד.', ' תגידו כן, זה בטוח.'], ['אני נוגע רק במה שתבחרו.', ' שום דבר אחר, בשום מקום אחר.'], ['עוזרים קטנים מתקינים ברקע,', ' בעלות נמוכה.']],
@@ -752,7 +763,7 @@ const I18N = {
     scanTitle: 'המחשב הזה', scanSub0: 'עוד לא הצצתי.', scanSub1: 'אני רק מסתכל. לא משנה כלום.', found: 'נמצא', notHere: 'לא כאן', ready: 'מוכן.',
     phoneChat: 'צ׳אט בטלפון', phoneOptional: 'אופציונלי', phoneLinked: 'מחובר',
     helper: 'בחרו נושא כדי לראות מה יש בו ולסמן מה להתקין.',
-    installAll: 'להתקין הכול', installAllBusy: 'מתקין…', installAllDone: 'הכול מותקן',
+    installAll: 'להתקין הכול', installAllBusy: 'מתקין…', installAllDone: 'הכול מותקן', nothingMore: 'אין עוד מה להתקין',
     allN: 'להתקין {0}', backToShufi: 'חזרה אל Shufi', backToShufiLabel: 'חזרה אל Shufi',
     skills1: 'סקיל {0}', skillsN: '{0} סקילים', tools1: 'כלי {0}', toolsN: '{0} כלים', ofInst: '{0} מתוך {1} מותקנים',
     topicSay: '{0}. לחצו על אחד כדי לראות מה הוא עושה.', gSkills: 'סקילים', gTools: 'כלים', gAnim: 'עיצוב › אנימציה',
@@ -762,11 +773,11 @@ const I18N = {
     nothingToDo: 'כל מה שאפשר להתקין מכאן כבר מותקן.',
     eli: 'הסבר עם תמונות', eliWhy: 'הסברים ארוכים הופכים לדף חזותי פשוט במקום קיר של טקסט.',
     t_core: 'יסודות', t_research: 'מחקר', t_notes: 'פתקים', t_design: 'עיצוב', t_build: 'בנייה', t_media: 'מדיה', t_animation: 'אנימציה',
-    inKit: 'בערכה', inKitDetail: 'בערכה של Shufi', treeAria: 'עץ של נושאים. כל נושא פותח את רשימת הסקילים והכלים שבו.', topicsAria: 'נושאים',
+    inKit: 'בערכה', inKitDetail: 'בערכת ההתחלה', treeAria: 'עץ של נושאים. כל נושא פותח את רשימת הסקילים והכלים שבו.', topicsAria: 'נושאים',
     advTitle: 'מתקדם · כל האפשרויות', advSub: 'לדלג קדימה: להתקין או לבדוק כל דבר עכשיו. הוא יופיע בעץ.', advClose: 'סגירת כל האפשרויות', advOpen: 'כל האפשרויות',
-    search: 'חיפוש סקילים וכלים', all: 'הכול', kindSkill: 'סקיל', kindTool: 'כלי', chipKit: 'הערכה של Shufi', featured: 'מומלץ', featuredSub: 'בראש העץ',
+    search: 'חיפוש סקילים וכלים', all: 'הכול', kindSkill: 'סקיל', kindTool: 'כלי', chipKit: 'הערכה של {0}', featured: 'מומלץ', featuredSub: 'בראש העץ',
     nothingMatches: 'שום דבר לא תואם ל״{0}״. נסו ״מחקר״, ״מפתח״ או שם של נושא.',
-    dStatus: 'מצב', dLicense: 'רישיון', dAuthor: 'מחבר', dNeeds: 'צריך', dSource: 'מקור', dMore: 'עוד כאלה', dClose: 'סגירת הפרטים', dHere: 'הנה {0}. ההתקנה היא לחיצה אחת.',
+    dStatus: 'מצב', dLicense: 'רישיון', dAuthor: 'מחבר', dNeeds: 'צריך', dSource: 'מקור', dMore: 'עוד כאלה', dClose: 'סגירת הפרטים', dHere: 'הנה {0}.',
     stInstalled: 'מותקן', stMissing: 'לא מותקן', stHand: 'מותקן ממקור משלו', stKey: 'צריך מפתח', stBlocked: 'צריך קודם את {0}',
     SAY_machine: 'קודם אבדוק מה כבר יש על המחשב שלכם.',
     DONE_machine: 'המחשב שלכם מוכן בשבילי.', FIX_machine: 'דבר אחד צריך תיקון לפני שנמשיך.',
@@ -775,7 +786,7 @@ const I18N = {
     SAY_tools: 'חברו את הכלים שתרצו שאשתמש בהם. אני מתקין אותם בשבילכם.', DONE_tools: 'הכלים בפנים. אפשר להוסיף עוד, או רק אחד.',
     SAY_workspace: 'בואו נחבר את סביבת העבודה של הצוות.', DONE_workspace: 'סביבת הצוות מחוברת.',
     SAY_phone: 'רוצים לדבר איתי מהטלפון? לגמרי אופציונלי.', DONE_phone: 'הטלפון מחובר.',
-    SAY_finish: 'כמעט שם. פתחו את כלי ה-AI שלכם ותגידו ״תזכור את זה״.', DONE_finish: 'הכול מוכן! פתחו את Claude Code בכל מקום. אני כבר מכיר אתכם.',
+    DONE_finish: 'הכול מוכן! פתחו את Claude Code בכל מקום. אני כבר מכיר אתכם.',
     MORE_machine: 'אני בודק אילו כלי AI לקוד יש על המחשב שלכם, כמו Claude Code, Codex ו-Cursor. אני רק קורא, לא משנה כלום. ככה אני יודע לאן לחבר את הקן.',
     MORE_memory: 'הקן הוא תיקייה אחת של פתקים בטקסט פשוט. אני קורא אותו בתחילת כל שיחה, בכל פרויקט ובכל הכלים שלכם. הקבצים שלכם ואפשר לפתוח אותם בכל רגע.',
     MORE_skills: 'סקילים הם דברים שאני יכול לעשות בשבילכם, כמו מחקר עם מקורות או הפיכת דף אינטרנט לפתקים נקיים. הערכה היא הסט הרגיל. לכל סקיל יש דף משלו, אז אפשר להוסיף רק אחד.',
@@ -783,7 +794,7 @@ const I18N = {
     MORE_workspace: 'התחברות לידע ולקוד המשותפים של הצוות.',
     MORE_phone: 'הצעד הזה אופציונלי. קישור פרטי נותן לכם לכתוב לי מהטלפון. אפשר לדלג ועדיין להשתמש בכל השאר.',
     MORE_finish: 'אפשר לחזור לדף הזה בכל רגע: הוא נפתח בדיוק איפה שאתם עכשיו. או לדלג על הדף ולבקש ממני בכלי ה-AI להוסיף כלים וסקילים. כל מה שכאן עובד גם משורת הפקודה.',
-    doneLine: '{0}: הושלם. {1}', justDone: 'מוכן! {0} הושלם.', finOpen: 'כמעט שם. עוד כמה צעדים פתוחים.',
+    finOpen: 'כמעט שם. עוד כמה צעדים פתוחים.',
     tricks: [['cheer', 'הו! אני עדיין כאן.'], ['point', 'בחרו ענף, כל ענף.'], ['brush', 'אני אוהב עיצוב טוב.'], ['camera', 'חייכו לצילום.'], ['key', 'מפתחות לא עוזבים את המחשב שלכם.'], ['celebrate', 'הידד!'], ['worried', 'וואו, לאט עם הלחיצות!']],
   },
 };
@@ -838,7 +849,7 @@ function switchLang() {
 /* Stars over the tree, dark theme only. */
 (function () {
   let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647; let o = '';
-  for (let i = 0; i < 44; i++) o += `<span class="star" style="left:${(27 + rnd() * 49).toFixed(1)}%;top:${(9 + rnd() * 62).toFixed(1)}%;--s:${(.5 + rnd() * .7).toFixed(2)}rem;--d:${(rnd() * 4).toFixed(1)}s;${i % 5 === 0 ? '--c:#e5813f;' : ''}"></span>`;
+  for (let i = 0; i < 44; i++) o += `<span class="star" style="inset-inline-start:${(27 + rnd() * 49).toFixed(1)}%;top:${(9 + rnd() * 62).toFixed(1)}%;--s:${(.5 + rnd() * .7).toFixed(2)}rem;--d:${(rnd() * 4).toFixed(1)}s;${i % 5 === 0 ? '--c:#e5813f;' : ''}"></span>`;
   $('#stars').innerHTML = o;
 })();
 
@@ -902,6 +913,7 @@ function stepTitle(id, english) {
   if (id === 'memory' && !isOwlEdition(p)) return 'Memory';
   return (LANG === 'he' && !english && I18N.he['s_' + id]) || (STEP_DEFS[id] && STEP_DEFS[id].title) || id;
 }
+const productName = () => (state.profile && state.profile.product) || 'Shufi';
 function stepList() { return ((state.profile && state.profile.steps) || DEFAULT_PROFILE.steps).filter((id) => STEP_DEFS[id]); }
 function teamTools() { return state.tools.filter((t) => t.category === 'workspace'); }
 function generalTools() { return state.tools.filter((t) => t.category !== 'workspace'); }
@@ -1300,7 +1312,7 @@ function paintTree() {
   const all = $('#install-all'), left = installable(items).length;
   $('#treebar p').textContent = tr('helper');
   if (all.dataset.busy !== '1') {
-    all.textContent = left ? tr('installAll') : tr('installAllDone');
+    all.textContent = left ? tr('installAll') : (items.every((i) => itemState(i) === 'installed') ? tr('installAllDone') : tr('nothingMore'));
     all.disabled = !left; all.classList.toggle('is-installed', !left);
     all.removeAttribute('aria-busy');
   }
@@ -1371,7 +1383,7 @@ function plan(id) {
     case 'memory': return hubReady() ? { pri: cont, sec: backB } : { pri: { l: tr('makeNest'), run: doNest }, sec: skip };
     case 'skills': {
       const kit = installable(kitItems());
-      return kit.length ? { pri: { l: tr('addKit'), run: addKit }, sec: st === 'ok' ? backB : skip } : { pri: cont, sec: backB };
+      return kit.length ? { pri: { l: tr('addKit', productName()), run: addKit }, sec: st === 'ok' ? backB : skip } : { pri: cont, sec: backB };
     }
     case 'tools': {
       const feat = allItems().find((x) => x.kind === 'tool' && x.raw.featured);
@@ -1390,6 +1402,7 @@ function lineFor(id, p) {
   const [a, b] = LPOSE[id] || ['happy', 'happy'];
   if (p.perm) return { t: tr('permLine'), p: 'point' };
   const st = stepStatus(id).s;
+  if (id === 'finish' && st !== 'ok') return { t: tr('finOpen'), p: 'working' };
   if (id === 'machine' && state.scanned && st !== 'ok' && state.preflight.length) return { t: tr('FIX_machine'), p: 'worried' };
   if (st === 'ok') return { t: tr('DONE_' + id), p: b };
   return { t: tr('SAY_' + id), p: a };
@@ -1427,7 +1440,7 @@ async function doNest() {
 }
 async function addKit() {
   const list = installable(kitItems());
-  await installRows(list, tr('chipKit'));
+  await installRows(list, tr('chipKit', productName()));
 }
 
 /* ---- link state: no pill; the owl says it, and the controls wait ------------ */
@@ -1754,8 +1767,9 @@ async function installMany(list, base, total, report) {
 /* the progress line and the final summary live in the open topic panel, or under the tree */
 function setStatus(s) { state.status = s; paintStatus(); }
 function paintStatus() {
-  const here = TOPIC ? $('#tp-status') : $('#installlog'), other = TOPIC ? $('#installlog') : $('#tp-status');
-  if (other) other.replaceChildren();
+  const mob = window.matchMedia('(max-width:700px)').matches;
+  const here = TOPIC ? $('#tp-status') : (mob ? $('#installlog') : $('#installlog-d'));
+  [$('#tp-status'), $('#installlog'), $('#installlog-d')].forEach((n) => { if (n && n !== here) n.replaceChildren(); });
   if (!here) return;
   const s = state.status;
   if (!s) here.replaceChildren(); else if (s.text) here.textContent = s.text; else here.replaceChildren(summaryNode(s.res, s.scope));
@@ -1815,8 +1829,8 @@ function rowHTML(it, sub) {
   else if (st === 'needskey') btn = `<button type="button" class="ibtn is-signin" data-open="${esc(it.key)}" aria-label="${esc(tr('needsKeyBtn') + ': ' + nm)}">${esc(tr('needsKeyBtn'))}</button>`;
   else if (st === 'external' || st === 'manual') btn = `<button type="button" class="ibtn" data-open="${esc(it.key)}" aria-label="${esc(tr('byHand') + ': ' + nm)}">${esc(tr('byHand'))}</button>`;
   else { btn = `<button type="button" class="ibtn" disabled>${esc(tr('installBtn'))}</button>`; rs = tr('needsFirst', r.requires_tool || '?'); }
-  const small = (r.default ? `<span class="kit">${esc(tr('inKit'))}</span> · ` : '') + esc(it.desc);
-  return `<li class="row${sub ? ' sub' : ''}" data-item="${esc(it.key)}" data-state="${ing ? 'installing' : st}"><button type="button" class="row-main" data-open="${esc(it.key)}"><span class="ico${it.kind === 'skill' ? ' sk' : ''}">${iconHTML(it)}</span><span class="rt"><b dir="auto">${esc(it.name)}</b><small dir="auto">${small}</small></span></button><span class="rs">${esc(rs)}</span>${btn}<div class="rerr" role="alert">${esc(ERR[it.key] || '')}</div></li>`;
+  const small = (r.default ? `<span class="kit">${esc(tr('inKit'))}</span><span class="sep" aria-hidden="true">·</span>` : '') + `<span class="dsc" dir="auto">${esc(it.desc)}</span>`;
+  return `<li class="row${sub ? ' sub' : ''}" data-item="${esc(it.key)}" data-state="${ing ? 'installing' : st}"><button type="button" class="row-main" data-open="${esc(it.key)}"><span class="ico${it.kind === 'skill' ? ' sk' : ''}">${iconHTML(it)}</span><span class="rt"><b dir="auto">${esc(it.name)}</b><small>${small}</small></span></button><span class="rs">${esc(rs)}</span>${btn}<div class="rerr" role="alert">${esc(ERR[it.key] || '')}</div></li>`;
 }
 /* after an install changes things, refresh every visible row in place */
 function patchRows() {
@@ -1831,8 +1845,9 @@ function patchRows() {
 
 let TOPIC = null, OPENER = null, DET = null;
 function paintTopicAll(btn) {
-  const left = installable(topicList(TOPIC).items).length;
+  const items = topicList(TOPIC).items, left = installable(items).length, every = items.every((i) => itemState(i) === 'installed');
   if (installing) { btn.disabled = true; return; }
+  btn.hidden = !left && !every;     // nothing left but by-hand items: the line above says so, no button
   btn.textContent = left ? tr('allN', left) : tr('installAllDone'); btn.disabled = !left; btn.classList.toggle('is-installed', !left);
 }
 function openTopic(key, opener) {
@@ -1882,9 +1897,11 @@ function wireTopic() {
   $('#topics-m').addEventListener('click', (e) => { const b = e.target.closest('[data-topic-m]'); if (b) openTopic(b.dataset.topicM, b); });
   $('#install-all').addEventListener('click', () => { const b = $('#install-all'); if (b.disabled) return; b.blur(); installRows(installable(allItems()), tr('installAll'), 'all'); });
   document.addEventListener('click', (e) => {
-    const t = e.target; if (!(t instanceof Element) || t.closest('#detail') || t.closest('#treebar')) return;
-    if (TOPIC && !t.closest('#topic') && !t.closest('[data-topic-tag],[data-topic-m]') && !t.closest('#top')) closeTopic(false);
-    if (advOpen() && !t.closest('#rightcol') && !t.closest('#catalog-open')) advClose(false);
+    /* the path is read at dispatch time: a row that was just re-rendered by its own click is already detached from the page */
+    const path = e.composedPath().filter((n) => n instanceof Element), inside = (sel) => path.some((n) => n.matches(sel));
+    if (!path.length || inside('#detail') || inside('#treebar')) return;
+    if (TOPIC && !inside('#topic') && !inside('[data-topic-tag],[data-topic-m]') && !inside('#top')) closeTopic(false);
+    if (advOpen() && !inside('#rightcol') && !inside('#catalog-open')) advClose(false);
   });
 }
 
@@ -1991,8 +2008,8 @@ function renderCat() {
   const root = $('#catalog'), list = $('.cat-list', root); if (!list) return;
   const secs = catSections();
   list.innerHTML = secs.length ? secs.map((s) => {
-    const left = installable(s.items).length, canAll = s.id !== 'featured';
-    return `<div class="sec${s.subsec ? ' subsec' : ''}" data-sec="${esc(s.id)}"><div class="sec-h"><b>${s.crumb ? `<span class="crumb">${esc(s.crumb)} ›</span> ` : ''}${esc(s.label)}</b><small>${esc(s.sub || countTxt(s.items))}</small>${canAll ? `<button type="button" class="ibtn ${left ? 'is-idle' : 'is-installed'}" data-install-sec="${esc(s.id)}"${left ? '' : ' disabled'}>${esc(left ? tr('installAll') : tr('installAllDone'))}</button>` : ''}</div><ul role="list">${s.shown.map((i) => rowHTML(i)).join('')}</ul></div>`;
+    const left = installable(s.items).length, every = s.items.every((i) => itemState(i) === 'installed'), canAll = s.id !== 'featured' && (left || every);
+    return `<div class="sec${s.subsec ? ' subsec' : ''}" data-sec="${esc(s.id)}"><div class="sec-h"><b>${s.crumb ? `<span class="crumb">${esc(s.crumb)} ›</span> ` : ''}${esc(s.label)}</b><small>${esc(s.sub || countTxt(s.items))}</small>${canAll ? `<button type="button" class="ibtn ${left ? 'is-idle' : 'is-installed'}" data-install-sec="${esc(s.id)}"${left ? '' : ' disabled'}>${esc(left ? tr('allN', left) : tr('installAllDone'))}</button>` : ''}</div><ul role="list">${s.shown.map((i) => rowHTML(i)).join('')}</ul></div>`;
   }).join('') : `<p class="none">${esc(tr('nothingMatches', CAT.q))}</p>`;
   const rs = $$('.row', list); if (rs[0]) rs[0].classList.add('sel');
 }
@@ -2003,7 +2020,7 @@ function syncCatHead() {
 }
 function mountCatalog() {
   const root = $('#catalog');
-  const chips = [...TOPIC_DEF.map((t) => [t.key, topicLabel(t.key)]), ['animation', topicLabel('animation')], ['kit', tr('chipKit')]];
+  const chips = [...TOPIC_DEF.map((t) => [t.key, topicLabel(t.key)]), ['animation', topicLabel('animation')], ['kit', tr('chipKit', productName())]];
   root.innerHTML = `<div class="cat-head"><label class="srch">${SVG.search}<input id="catalog-search" type="search" placeholder="${esc(tr('search'))}" autocomplete="off" aria-label="${esc(tr('search'))}"><kbd>/</kbd></label><div class="seg" role="group" aria-label="Show">${[['all', tr('all')], ['skill', tr('gSkills')], ['tool', tr('gTools')]].map(([k, l]) => `<button type="button" data-kind="${k}" aria-pressed="${CAT.kind === k}">${esc(l)}</button>`).join('')}</div><div class="chips" role="group" aria-label="${esc(tr('advTitle'))}">${chips.map(([k, l]) => `<button type="button" data-chip="${k}" aria-pressed="${CAT.chip === k}">${esc(l)}</button>`).join('')}</div></div><div class="cat-list" role="region" aria-label="${esc(tr('search'))}"></div>`;
   const inp = $('#catalog-search', root);
   inp.addEventListener('input', () => { CAT.q = inp.value; renderCat(); });
@@ -2074,8 +2091,7 @@ function paintStatic() {
   const ids = stepList();
   const fresh = !hubReady();
   const first = fresh ? ids[0] : (ids.find((id) => id !== 'finish' && !STEP_DEFS[id].optional && stepStatus(id).s !== 'ok') || 'finish');
-  state.scanned = !fresh || state.preflight.length === 0 ? true : false;
-  if (fresh && ids[0] !== 'machine') state.scanned = true;
+  state.scanned = !fresh || ids[0] !== 'machine' || state.preflight.length === 0;   // a first visit starts un-looked-at
   go(first);
   requestAnimationFrame(() => requestAnimationFrame(() => { window.__shufiReady = true; }));
 })();
