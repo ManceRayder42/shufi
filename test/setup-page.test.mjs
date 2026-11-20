@@ -170,3 +170,33 @@ test('fonts: the licence text ships next to the fonts (SIL OFL 1.1)', () => {
     assert.match(t, /SIL OPEN FONT LICENSE Version 1\.1/);
   }
 });
+
+test('hebrew: every string in the en table has a Hebrew twin, and no step-form string is English-only', () => {
+  const src = page.slice(page.indexOf('const I18N = {'), page.indexOf('\nfunction tr('));
+  const I18N = new Function(src.replace(/^const I18N = /, 'return ').replace(/;\s*$/, ''))();
+  const missing = Object.keys(I18N.en).filter((k) => !(k in I18N.he));
+  assert.deepEqual(missing, [], 'keys with no Hebrew: ' + missing.join(', '));
+  const extra = Object.keys(I18N.he).filter((k) => !(k in I18N.en));
+  assert.deepEqual(extra, [], 'Hebrew keys with no English twin: ' + extra.join(', '));
+  // Every form string must be actually translated: some Hebrew letters, unless it is a bare name or label that is identical on purpose.
+  const sameOk = new Set(['f_fr_claude']);   // a bare product name
+  for (const k of Object.keys(I18N.en)) {
+    const v = I18N.he[k];
+    if (typeof v !== 'string' || !k.startsWith('f_')) continue;
+    if (sameOk.has(k)) continue;
+    assert.match(v, /[֐-׿]/, `${k} must contain Hebrew: ${v}`);
+  }
+  // The step forms are built from the table: no English sentence is hard-coded between frow() and renderStepForm().
+  const forms = page.slice(page.indexOf('function tf('), page.indexOf('function renderStepForm()'))
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const literals = [...forms.matchAll(/'([^'\n]*)'/g)].map((m) => m[1]);
+  const allowed = new Set(['Claude Code', '/shufi-setup', '/newbot', 'ffmpeg', 'Telegram', '/done', '/telegram:access pair ', 'https://t.me/BotFather', 'ELEVENLABS_API_KEY', '/api/telegram-token', '/api/telegram-install', '/api/telegram-status', '/api/install-tool', '/api/preflight?refresh=1', '/api/skills', '/api/secret', '/api/config', '/api/tools/connect', '/api/tools/install']);
+  const sentences = literals.filter((l) => /[A-Za-z]{3,}/.test(l) && /\s/.test(l.trim()) && /^[A-Z0-9]/.test(l.trim()) && !allowed.has(l));   // class names are lowercase; UI sentences are capitalised
+  assert.deepEqual(sentences, [], 'hard-coded English in a step form: ' + JSON.stringify(sentences));
+  assert.ok(!/stepTitle\([^)]*true\)/.test(forms), 'forms use translated step titles');
+  assert.ok(!page.includes('trEn'), 'no English-only translation helper any more');
+  assert.ok(!/f\.dir = 'ltr'; f\.lang = 'en'/.test(page), 'the forms are no longer an English left-to-right island');
+  // commands and names inside sentences are isolated left to right
+  assert.match(forms, /el\('bdi', \{ dir: 'ltr'/);
+  assert.match(forms, /el\('div', \{ className: 'cmd', dir: 'ltr' \}/);
+});

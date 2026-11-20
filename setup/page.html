@@ -745,6 +745,19 @@ const I18N = {
     MORE_workspace: 'Connect to the shared team knowledge and code.',
     MORE_phone: 'This step is optional. A private link lets you message me from your phone. You can skip it and still use everything else.',
     MORE_finish: 'Come back to this page any time: it opens right where you are now. Or skip the page and ask me in Claude Code to add tools or skills.',
+    f_copy: 'Copy', f_copied: 'Copied', f_select: 'Select it', f_failed: 'Didn’t work', f_save: 'Save', f_saving: 'Saving', f_saved: 'Saved on this computer.', f_savedShort: 'Saved.', f_paste: 'Paste it here', f_pasteFirst: 'Paste {0} first.', f_theKey: 'the key', f_secret: 'Secret',
+    f_installing: 'Installing', f_working: 'Working', f_connecting: 'Connecting', f_linking: 'Linking', f_download: 'Download', f_downloaded: 'Downloaded', f_recommended: 'Recommended', f_optChip: 'Optional', f_ready: 'Ready', f_required: 'Required', f_docs: 'What is this?', f_check: 'Check', f_files: 'Files in the nest',
+    f_s_checking: 'Checking…', f_s_fix: '{0} thing to fix', f_s_ready: '{0} of {1} ready', f_s_notMade: 'Not created yet', f_s_on: '{0} of {1} on', f_s_none: 'None on yet', f_s_conn: '{0} of {1} connected', f_s_opt: 'Optional', f_s_voice: 'voice', f_s_ready1: 'Ready', f_s_next: 'What to do next',
+    f_mBad: '{0} required item needs attention. Fix it below, then press Check again.', f_mOk: 'Everything required is here.', f_mOpt: '{0} optional extra(s) are missing, fine to skip.', f_mNone: 'Nothing missing.',
+    f_fr_node: '{0} — what {1} runs on', f_fr_claude: '{0}', f_fr_git: '{0} — keeps a history of your memory (optional)', 'f_fr_git-identity': 'A name for saved changes (optional)', f_fr_bun: '{0} — only for the Telegram bridge', f_fr_tmux: '{0} — only for always-on mode', f_fr_ffmpeg: '{0} — only for voice', f_fr_obsidian: '{0} — read your memory as notes',
+    f_nLead: 'One folder of plain text files that Claude reads at the start of every session, in any project. This is your second brain.', f_nWhere: 'Where to keep it', f_nDefault: 'The default is fine. You can open this folder in Obsidian later.', f_nRerun: 'Run setup again', f_nSafe: 'Safe to run twice.', f_nCreates: 'Creates the folder, turns on history and the basic skills, and connects the free tools. Safe to run twice.', f_nFail: 'That didn’t work', f_done: 'Done', f_look: 'Needs a look', f_skipped: 'Skipped: {0}',
+    f_st_folder: 'Making a place for its memory', f_st_history: 'Turning on its history', f_st_notes: 'Looking for Obsidian', f_st_skills: 'Switching on the basics', f_st_tools: 'Connecting the basics', f_st_checkup: 'Checking your Mac',
+    f_oTitle: 'Optional: see it in Obsidian', f_oPh: 'Path to your Obsidian vault, e.g. ~/Documents/Notes', f_oAria: 'Obsidian vault path', f_oLink: 'Link', f_oOk: 'Linked. Your Shufi memory now shows up as a folder inside your vault.', f_oBad: 'Couldn’t link that folder.', f_oNone: 'Obsidian isn’t installed', f_oNoneMeta: 'Optional. Install it from the Tools step if you want to browse your memory as notes.',
+    f_tLead: 'Programs and connections Claude can use for you. Press Install or Connect: each one says what it’s for. Skip any you don’t need.', f_tNoList: 'Couldn’t read the tool list', f_tRestart: 'Restart setup with {0}.', f_tCount: '{0} of {1} ready. Recommended ones are marked; the rest are for when you need them.',
+    f_k_cli: 'program', f_k_app: 'app', f_k_mcp: 'connection', f_k_repo: 'code',
+    f_wLead: 'Connect to the shared team knowledge and code.', f_wFirst: 'Your first message to Claude', f_wFirstNote: 'Open Claude Code and paste this. It reads the team briefing and tells you where things stand.',
+    f_pLead: 'Optional. Message Claude from Telegram when you’re away from your desk, and talk to it instead of typing.', f_p1: '1 · Make a bot', f_p1m: 'In Telegram, message BotFather and send {0}.', f_p1b: 'Open BotFather', f_p2: '2 · Paste the token it gives you', f_p3: '3 · Connect it', f_p3m: 'Runs on this computer.', f_p4: '4 · Say hello to your bot', f_p4m: 'Send it any message, then press Check.', f_pAria: 'Telegram bot token', f_pLast: 'Last step: paste this into Claude Code:', f_pNone: 'Nothing yet. Send your bot a message first.', f_pKnow: 'One thing worth knowing', f_pKnowBody: 'Telegram lets only one program listen to a bot. Run this on one computer only: a second one silently swallows messages.', f_pVoice: 'Voice', f_pVoiceN: 'Talk to it, hear it answer', f_pVoiceM: 'Speech recognition runs on your own computer. Needs {0}.', f_pEleven: 'Nicer voices (ElevenLabs key), optional',
+    f_fHead: "You're set.", f_fLead: 'Close this tab whenever you like. Everything below is how you use it from now on.', f_fOpen: 'Still open: ', f_fCmds: 'Handy commands', f_fL1: 'Open Claude Code in any folder — it already knows you.', f_fL2: 'Say "done" when you finish working, so it remembers.',
     finOpen: 'Almost there. A couple of steps are still open.',
     tricks: [['cheer', 'Hoo! Still here.'], ['point', 'Pick a branch, any branch.'], ['brush', 'I do love a good design.'], ['camera', 'Say cheese.'], ['key', 'Keys never leave your computer.'], ['celebrate', 'Hooray!'], ['worried', 'Whoa, easy on the clicking!']],
   },
@@ -793,6 +806,19 @@ const I18N = {
     MORE_workspace: 'התחברות לידע ולקוד המשותפים של הצוות.',
     MORE_phone: 'הצעד הזה אופציונלי. קישור פרטי נותן לכם לכתוב לי מהטלפון. אפשר לדלג ועדיין להשתמש בכל השאר.',
     MORE_finish: 'אפשר לחזור לדף הזה בכל רגע: הוא נפתח בדיוק איפה שאתם עכשיו. או לדלג על הדף ולבקש ממני ב-Claude Code להוסיף כלים וסקילים.',
+    f_copy: 'להעתיק', f_copied: 'הועתק', f_select: 'לסמן ידנית', f_failed: 'לא הצליח', f_save: 'לשמור', f_saving: 'שומר', f_saved: 'נשמר על המחשב הזה.', f_savedShort: 'נשמר.', f_paste: 'הדביקו כאן', f_pasteFirst: 'הדביקו קודם: {0}.', f_theKey: 'את המפתח', f_secret: 'סוד',
+    f_installing: 'מתקין', f_working: 'עובד', f_connecting: 'מתחבר', f_linking: 'מקשר', f_download: 'להוריד', f_downloaded: 'הורד', f_recommended: 'מומלץ', f_optChip: 'אופציונלי', f_ready: 'מוכן', f_required: 'חובה', f_docs: 'מה זה?', f_check: 'לבדוק', f_files: 'קבצים בקן',
+    f_s_checking: 'בודק…', f_s_fix: '{0} לתיקון', f_s_ready: '{0} מתוך {1} מוכנים', f_s_notMade: 'עוד לא נוצר', f_s_on: '{0} מתוך {1} פעילים', f_s_none: 'עוד אין פעילים', f_s_conn: '{0} מתוך {1} מחוברים', f_s_opt: 'אופציונלי', f_s_voice: 'קול', f_s_ready1: 'מוכן', f_s_next: 'מה לעשות עכשיו',
+    f_mBad: '{0} פריט חובה דורש טיפול. תקנו אותו למטה ואז לחצו על לבדוק שוב.', f_mOk: 'כל מה שחובה נמצא כאן.', f_mOpt: '{0} תוספות אופציונליות חסרות, אפשר לדלג.', f_mNone: 'שום דבר לא חסר.',
+    f_fr_node: '{0} — מה ש-{1} רץ עליו', f_fr_claude: '{0}', f_fr_git: '{0} — שומר היסטוריה של הזיכרון שלכם (אופציונלי)', 'f_fr_git-identity': 'שם לשינויים שנשמרים (אופציונלי)', f_fr_bun: '{0} — רק לגשר הטלגרם', f_fr_tmux: '{0} — רק למצב תמיד-פעיל', f_fr_ffmpeg: '{0} — רק לקול', f_fr_obsidian: '{0} — לקרוא את הזיכרון כפתקים',
+    f_nLead: 'תיקייה אחת של קבצי טקסט פשוטים ש-Claude קורא בתחילת כל סשן, בכל פרויקט. זה המוח השני שלכם.', f_nWhere: 'איפה לשמור אותו', f_nDefault: 'ברירת המחדל מצוינת. אפשר לפתוח את התיקייה ב-Obsidian אחר כך.', f_nRerun: 'להריץ שוב', f_nSafe: 'בטוח להריץ פעמיים.', f_nCreates: 'יוצר את התיקייה, מפעיל היסטוריה ואת הסקילים הבסיסיים, ומחבר את הכלים החינמיים. בטוח להריץ פעמיים.', f_nFail: 'זה לא הצליח', f_done: 'בוצע', f_look: 'דורש מבט', f_skipped: 'דולג: {0}',
+    f_st_folder: 'מכין מקום לזיכרון', f_st_history: 'מפעיל היסטוריה', f_st_notes: 'מחפש את Obsidian', f_st_skills: 'מפעיל את הבסיס', f_st_tools: 'מחבר את הבסיס', f_st_checkup: 'בודק את המחשב',
+    f_oTitle: 'אופציונלי: לראות אותו ב-Obsidian', f_oPh: 'נתיב לכספת ה-Obsidian שלכם, למשל ~/Documents/Notes', f_oAria: 'נתיב כספת Obsidian', f_oLink: 'לקשר', f_oOk: 'קושר. הזיכרון של Shufi מופיע עכשיו כתיקייה בתוך הכספת שלכם.', f_oBad: 'לא הצלחנו לקשר את התיקייה הזו.', f_oNone: 'Obsidian לא מותקן', f_oNoneMeta: 'אופציונלי. אפשר להתקין אותו בצעד הכלים אם רוצים לדפדף בזיכרון כפתקים.',
+    f_tLead: 'תוכנות וחיבורים ש-Claude יכול להשתמש בהם בשבילכם. לחצו על להתקין או לחבר: כל אחד אומר בשביל מה הוא. אפשר לדלג על מה שלא צריך.', f_tNoList: 'לא הצלחנו לקרוא את רשימת הכלים', f_tRestart: 'הפעילו מחדש את ההגדרה עם {0}.', f_tCount: '{0} מתוך {1} מוכנים. המומלצים מסומנים; השאר למקרה שתצטרכו.',
+    f_k_cli: 'תוכנה', f_k_app: 'אפליקציה', f_k_mcp: 'חיבור', f_k_repo: 'קוד',
+    f_wLead: 'התחברות לידע ולקוד המשותפים של הצוות.', f_wFirst: 'ההודעה הראשונה שלכם ל-Claude', f_wFirstNote: 'פתחו את Claude Code והדביקו את זה. הוא קורא את תדריך הצוות ומספר איפה הדברים עומדים.',
+    f_pLead: 'אופציונלי. אפשר לכתוב ל-Claude מטלגרם כשאתם לא ליד המחשב, ולדבר איתו במקום להקליד.', f_p1: '1 · ליצור בוט', f_p1m: 'בטלגרם, כתבו ל-BotFather ושלחו {0}.', f_p1b: 'לפתוח את BotFather', f_p2: '2 · להדביק את הטוקן שהוא נותן', f_p3: '3 · לחבר אותו', f_p3m: 'רץ על המחשב הזה.', f_p4: '4 · להגיד שלום לבוט', f_p4m: 'שלחו לו הודעה כלשהי, ואז לחצו על לבדוק.', f_pAria: 'טוקן בוט טלגרם', f_pLast: 'צעד אחרון: הדביקו את זה ב-Claude Code:', f_pNone: 'עוד שום דבר. שלחו קודם הודעה לבוט.', f_pKnow: 'דבר אחד שכדאי לדעת', f_pKnowBody: 'טלגרם מאפשרת רק לתוכנה אחת להאזין לבוט. הריצו את זה על מחשב אחד בלבד: מחשב שני בולע הודעות בשקט.', f_pVoice: 'קול', f_pVoiceN: 'לדבר איתו ולשמוע אותו עונה', f_pVoiceM: 'זיהוי הדיבור רץ על המחשב שלכם. צריך {0}.', f_pEleven: 'קולות יפים יותר (מפתח ElevenLabs), אופציונלי',
+    f_fHead: 'הכול מוכן.', f_fLead: 'אפשר לסגור את הלשונית מתי שבא לכם. מה שלמטה הוא איך משתמשים בזה מעכשיו.', f_fOpen: 'עדיין פתוח: ', f_fCmds: 'פקודות שימושיות', f_fL1: 'פתחו את Claude Code בכל תיקייה, הוא כבר מכיר אתכם.', f_fL2: 'תגידו ״done״ כשאתם מסיימים לעבוד, כדי שהוא יזכור.',
     finOpen: 'כמעט שם. עוד כמה צעדים פתוחים.',
     tricks: [['cheer', 'הו! אני עדיין כאן.'], ['point', 'בחרו ענף, כל ענף.'], ['brush', 'אני אוהב עיצוב טוב.'], ['camera', 'חייכו לצילום.'], ['key', 'מפתחות לא עוזבים את המחשב שלכם.'], ['celebrate', 'הידד!'], ['worried', 'וואו, לאט עם הלחיצות!']],
   },
@@ -801,8 +827,6 @@ function tr(key, ...args) {
   const v = (I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key;
   return typeof v === 'string' ? v.replace(/\{(\d)\}/g, (_, i) => (args[i] != null ? args[i] : '')) : v;
 }
-/* Same, but for the English-only step forms that sit inside a Hebrew page. */
-const trEn = (key, ...args) => String(I18N.en[key] ?? key).replace(/\{(\d)\}/g, (_, i) => (args[i] != null ? args[i] : ''));
 
 const TOKEN = new URLSearchParams(location.search).get('t') || '';
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -926,36 +950,36 @@ function stepStatus(id) {
     case 'machine': {
       const bad = pf.filter((c) => c.required && !c.ok).length;
       const ok = pf.filter((c) => c.ok).length;
-      if (!pf.length) return { s: 'idle', line: 'Checking…' };
-      return bad ? { s: 'warn', line: bad + ' thing to fix' } : { s: 'ok', line: ok + ' of ' + pf.length + ' ready' };
+      if (!pf.length) return { s: 'idle', line: tr('f_s_checking') };
+      return bad ? { s: 'warn', line: tr('f_s_fix', bad) } : { s: 'ok', line: tr('f_s_ready', ok, pf.length) };
     }
-    case 'memory': return hubReady() ? { s: 'ok', line: shortPath(state.cfg.hub) } : { s: 'idle', line: 'Not created yet' };
+    case 'memory': return hubReady() ? { s: 'ok', line: shortPath(state.cfg.hub) } : { s: 'idle', line: tr('f_s_notMade') };
     case 'skills': {
       const own = state.skills.filter((s) => !s.install);
       const on = own.filter((s) => s.enabled).length;
-      return on ? { s: 'ok', line: on + ' of ' + own.length + ' on' } : { s: 'idle', line: 'None on yet' };
+      return on ? { s: 'ok', line: tr('f_s_on', on, own.length) } : { s: 'idle', line: tr('f_s_none') };
     }
     case 'tools': {
       const list = generalTools();
       const ready = list.filter((t) => t.state === 'ready').length;
       if (!list.length) return { s: 'idle', line: '—' };
-      return { s: ready === list.length ? 'ok' : (ready ? 'warn' : 'idle'), line: ready + ' of ' + list.length + ' connected' };
+      return { s: ready === list.length ? 'ok' : (ready ? 'warn' : 'idle'), line: tr('f_s_conn', ready, list.length) };
     }
     case 'workspace': {
       const list = teamTools();
       const ready = list.filter((t) => t.state === 'ready').length;
       if (!list.length) return { s: 'idle', line: '—' };
-      return { s: ready === list.length ? 'ok' : (ready ? 'warn' : 'idle'), line: ready + ' of ' + list.length + ' ready' };
+      return { s: ready === list.length ? 'ok' : (ready ? 'warn' : 'idle'), line: tr('f_s_ready', ready, list.length) };
     }
     case 'phone': {
       const tg = state.telegram && state.telegram.configured;
       const v = state.skills.find((s) => s.id === 'voice');
       const n = (tg ? 1 : 0) + (v && v.enabled ? 1 : 0);
-      return n ? { s: 'ok', line: [tg && 'Telegram', v && v.enabled && 'voice'].filter(Boolean).join(' + ') } : { s: 'idle', line: 'Optional' };
+      return n ? { s: 'ok', line: [tg && 'Telegram', v && v.enabled && tr('f_s_voice')].filter(Boolean).join(' + ') } : { s: 'idle', line: tr('f_s_opt') };
     }
     case 'finish': {
       const core = stepList().filter((x) => x !== 'finish' && !STEP_DEFS[x].optional);
-      return core.every((x) => stepStatus(x).s === 'ok') ? { s: 'ok', line: 'Ready' } : { s: 'idle', line: 'What to do next' };
+      return core.every((x) => stepStatus(x).s === 'ok') ? { s: 'ok', line: tr('f_s_ready1') } : { s: 'idle', line: tr('f_s_next') };
     }
   }
   return { s: 'idle', line: '' };
@@ -1279,7 +1303,7 @@ function paintGround(animate) {
   /* the nest */
   const made = hubReady();
   $('#nestG').classList.toggle('on', made); $('#gh-nest').classList.toggle('hide', made);
-  const f = $('#files'); f.setAttribute('aria-label', 'Files in the nest');
+  const f = $('#files'); f.setAttribute('aria-label', tr('f_files'));
   const hp = shortPath(state.cfg && state.cfg.hub), segs = hp.split('/').filter(Boolean);
   const names = made ? [hp.length > 14 && segs.length > 1 ? '…/' + segs[segs.length - 1] : hp, 'MEMORY.md', 'working-rules.md'] : [];   // a long path is shortened so the tag never runs into the phone card
   f.innerHTML = names.map((t, i) => `<span class="fp${i ? '' : ' path'}"${i ? '' : ` title="${esc(hp)}"`} style="--r:${i % 2 ? 1.5 : -1.5}deg;transition-delay:${i * .22}s">${esc(t)}</span>`).join('');
@@ -1477,18 +1501,28 @@ function paintReveal() {
    Step forms: the real controls, in the left column under Shufi's bubble, in the
    same felt. Only the steps that have something to fill in or read show one.
    ========================================================================== */
-function frow(dot, name, meta, ...extra) {
-  return el('div', { className: 'frow' }, dot ? el('span', { className: 'dot ' + dot }) : null,
-    el('div', { className: 'fg' }, el('div', { className: 'fn', textContent: name }), meta ? el('div', { className: 'fm', textContent: meta }) : null), ...extra.filter(Boolean));
+/* A translated sentence that carries names, paths or commands: those go in isolated
+   left-to-right spans, so a Hebrew sentence never reorders them. */
+function tf(key, ...vals) {
+  const out = document.createElement('span'), parts = String((I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key).split(/(\{\d\})/);
+  parts.forEach((p) => { const m = /^\{(\d)\}$/.exec(p); if (!m) { if (p) out.append(p); return; } const v = vals[+m[1]]; out.append(v instanceof Node ? v : el('bdi', { dir: 'ltr', textContent: String(v == null ? '' : v) })); });
+  return out;
 }
-function fhead(title, lead) { return [el('h2', { textContent: title }), lead ? el('p', { className: 'lead', textContent: lead }) : null]; }
+/* Text that comes from the server or the profile (descriptions, details, labels) keeps its own direction. */
+const pfText = (val, def, key) => (val === def ? tr(key) : val);
+function frow(dot, name, meta, ...extra) {
+  const metaNode = meta == null || meta === '' ? null : el('div', { className: 'fm', dir: 'auto' }, meta);
+  return el('div', { className: 'frow' }, dot ? el('span', { className: 'dot ' + dot }) : null,
+    el('div', { className: 'fg' }, el('div', { className: 'fn', dir: 'auto' }, name), metaNode), ...extra.filter(Boolean));
+}
+function fhead(title, lead) { return [el('h2', { dir: 'auto', textContent: title }), lead ? el('p', { className: 'lead' }, lead) : null]; }
 function copyCmd(command) {
-  const b = el('button', { className: 'sbtn', type: 'button', textContent: 'Copy' });
+  const b = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_copy') });
   b.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(command); b.textContent = 'Copied'; } catch { b.textContent = 'Select it'; }
-    setTimeout(() => { b.textContent = 'Copy'; }, 1500);
+    try { await navigator.clipboard.writeText(command); b.textContent = tr('f_copied'); } catch { b.textContent = tr('f_select'); }
+    setTimeout(() => { b.textContent = tr('f_copy'); }, 1500);
   });
-  return el('div', { className: 'cmd' }, el('code', { textContent: command }), b);
+  return el('div', { className: 'cmd', dir: 'ltr' }, el('code', { textContent: command }), b);
 }
 function busy(btn, label) {
   state.busy = true; renderGuide(true); say(tr('working'), 'working');
@@ -1504,67 +1538,64 @@ function sw(checked, disabled, onChange, label) {
   return el('label', { className: 'sw' }, input, el('span'));
 }
 function secretField(name, label, help) {
-  const input = el('input', { type: 'password', placeholder: 'Paste it here', autocomplete: 'off' });
+  const input = el('input', { type: 'password', placeholder: tr('f_paste'), autocomplete: 'off' });
   input.setAttribute('aria-label', label || name);
-  const b = el('button', { className: 'sbtn', type: 'button', textContent: 'Save' });
+  const b = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_save') });
   const msg = el('div', { className: 'msg', role: 'status' });
   b.addEventListener('click', async () => {
     const value = input.value.trim(); if (!value) return;
-    const done = busy(b, 'Saving');
-    try { await post('/api/secret', { name, value }); input.value = ''; msg.className = 'msg ok'; msg.textContent = 'Saved on this computer.'; }
+    const done = busy(b, tr('f_saving'));
+    try { await post('/api/secret', { name, value }); input.value = ''; msg.className = 'msg ok'; msg.textContent = tr('f_saved'); }
     catch (e) { msg.className = 'msg bad'; msg.textContent = e.message; }
     done();
   });
-  return el('div', { className: 'field' }, el('div', { className: 'fl', textContent: label || name }), el('div', { className: 'inline' }, input, b), help ? el('div', { className: 'note', textContent: help }) : null, msg);
+  return el('div', { className: 'field' }, el('div', { className: 'fl', dir: 'auto', textContent: label || name }), el('div', { className: 'inline' }, input, b), help ? el('div', { className: 'note', dir: 'auto', textContent: help }) : null, msg);
 }
-const FRIENDLY = {
-  node: 'Node.js — what Claude Code runs on', claude: 'Claude Code', git: 'git — keeps a history of your memory (optional)',
-  'git-identity': 'A name for saved changes (optional)', bun: 'Bun — only for the Telegram bridge', tmux: 'tmux — only for always-on mode',
-  ffmpeg: 'ffmpeg — only for voice', obsidian: 'Obsidian — read your memory as notes',
-};
 const INSTALLABLE = ['bun', 'tmux', 'ffmpeg', 'obsidian'];
+const FR_NAMES = { node: ['Node.js', 'Claude Code'], claude: ['Claude Code'], git: ['git'], bun: ['Bun'], tmux: ['tmux'], ffmpeg: ['ffmpeg'], obsidian: ['Obsidian'] };
+const friendly = (c) => { const k = 'f_fr_' + c.id; return I18N.en[k] ? tf(k, ...(FR_NAMES[c.id] || [])) : c.label; };   // names inside the sentence stay left to right
 function installLegacy(tool) {
-  const b = el('button', { className: 'sbtn', type: 'button', textContent: 'Install' });
+  const b = el('button', { className: 'sbtn', type: 'button', textContent: tr('installBtn') });
   b.addEventListener('click', async () => {
-    const done = busy(b, 'Installing');
+    const done = busy(b, tr('f_installing'));
     try {
       const r = await post('/api/install-tool', { tool });
       if (r.ok) { state.preflight = (await api('/api/preflight?refresh=1')).checks || []; state.busy = false; state.over = null; repaint(); return; }
       if (r.error === 'no-installer') { state.busy = false; b.replaceWith(copyCmd(r.manual || ('see ' + (r.url || '')))); renderGuide(false); return; }
-      done(); b.textContent = 'Didn’t work';
+      done(); b.textContent = tr('f_failed');
     } catch (e) { done(); b.textContent = e.message; }
   });
   return b;
 }
-const KIND = { cli: 'program', app: 'app', mcp: 'connection', repo: 'code' };
+const kindWord = (k) => (I18N.en['f_k_' + k] ? tr('f_k_' + k) : k);
 function toolCard(t) {
   const ready = t.state === 'ready';
-  const chip = ready ? el('span', { className: 'chip ok', textContent: t.kind === 'mcp' ? 'Connected' : (t.kind === 'repo' ? 'Downloaded' : 'Installed') })
-    : el('span', { className: 'chip' + (t.default ? ' warn' : ''), textContent: t.default ? 'Recommended' : 'Optional' });
+  const chip = ready ? el('span', { className: 'chip ok', textContent: t.kind === 'mcp' ? tr('connected') : (t.kind === 'repo' ? tr('f_downloaded') : tr('installed')) })
+    : el('span', { className: 'chip' + (t.default ? ' warn' : ''), textContent: t.default ? tr('f_recommended') : tr('f_optChip') });
   const card = el('div', { className: 'tcard' });
   card.dataset.state = t.state;
-  card.append(el('header', {}, el('span', { className: 'fn', textContent: t.name }), chip));
-  card.append(el('div', { className: 'why', textContent: t.why }));
+  card.append(el('header', {}, el('span', { className: 'fn', dir: 'auto', textContent: t.name }), chip));
+  card.append(el('div', { className: 'why', dir: 'auto', textContent: t.why }));
   const actions = el('div', { className: 'acts' });
   const msg = el('div', { className: 'msg', role: 'alert' });
   let secretIn = null;
   if (!ready && t.secret) {
-    secretIn = el('input', { type: 'password', placeholder: t.secret.placeholder || 'Paste it here', autocomplete: 'off' });
-    secretIn.setAttribute('aria-label', t.secret.label || 'Secret');
-    card.append(el('div', { className: 'field' }, el('div', { className: 'fl', textContent: t.secret.label }), secretIn, t.secret.help ? el('div', { className: 'note', textContent: t.secret.help }) : null));
+    secretIn = el('input', { type: 'password', placeholder: t.secret.placeholder || tr('f_paste'), autocomplete: 'off' });
+    secretIn.setAttribute('aria-label', t.secret.label || tr('f_secret'));
+    card.append(el('div', { className: 'field' }, el('div', { className: 'fl', dir: 'auto', textContent: t.secret.label }), secretIn, t.secret.help ? el('div', { className: 'note', dir: 'auto', textContent: t.secret.help }) : null));
   }
   if (!ready) {
     const isMcp = t.kind === 'mcp';
     const can = isMcp ? t.can_connect !== false : t.can_install !== false;
     if (can) {
-      const b = el('button', { className: 'sbtn pri', type: 'button', textContent: isMcp ? 'Connect' : (t.kind === 'repo' ? 'Download' : 'Install') });
+      const b = el('button', { className: 'sbtn pri', type: 'button', textContent: isMcp ? tr('connectBtn') : (t.kind === 'repo' ? tr('f_download') : tr('installBtn')) });
       b.addEventListener('click', async () => {
-        if (secretIn && !secretIn.value.trim()) { msg.className = 'msg bad'; msg.textContent = 'Paste ' + (t.secret.label || 'the key') + ' first.'; secretIn.focus(); return; }
-        const done = busy(b, isMcp ? 'Connecting' : 'Working');
+        if (secretIn && !secretIn.value.trim()) { msg.className = 'msg bad'; msg.textContent = tr('f_pasteFirst', (t.secret.label || tr('f_theKey'))); secretIn.focus(); return; }
+        const done = busy(b, isMcp ? tr('f_connecting') : tr('f_working'));
         try {
           const r = await post(isMcp ? '/api/tools/connect' : '/api/tools/install', { id: t.id, secret: secretIn ? secretIn.value.trim() : undefined });
           if (r && r.ok) { await refresh(['tools', 'preflight']); state.busy = false; state.over = null; repaint(); return; }
-          msg.className = 'msg bad'; msg.textContent = (r && (r.error || r.detail)) || 'Didn’t work';
+          msg.className = 'msg bad'; msg.textContent = (r && (r.error || r.detail)) || tr('f_failed');
           if (r && r.manual) card.append(copyCmd(r.manual));
         } catch (e) { msg.className = 'msg bad'; msg.textContent = e.message; }
         done();
@@ -1572,62 +1603,64 @@ function toolCard(t) {
       actions.append(b);
     }
     if (t.manual && !can) card.append(copyCmd(t.manual));
-  } else if (t.after) card.append(el('div', { className: 'why', textContent: t.after }));
-  if (t.docs) actions.append(el('a', { href: t.docs, target: '_blank', rel: 'noopener', textContent: 'What is this?' }));
-  actions.append(el('span', { className: 'fm', style: 'margin-inline-start:auto', textContent: KIND[t.kind] || t.kind }));
+  } else if (t.after) card.append(el('div', { className: 'why', dir: 'auto', textContent: t.after }));
+  if (t.docs) actions.append(el('a', { href: t.docs, target: '_blank', rel: 'noopener', textContent: tr('f_docs') }));
+  actions.append(el('span', { className: 'fm', style: 'margin-inline-start:auto', textContent: kindWord(t.kind) }));
   card.append(actions, msg);
   return card;
 }
+const SETUP_STEP_KEYS = ['folder', 'history', 'notes', 'skills', 'tools', 'checkup'];
+const stepLabel = (st) => (SETUP_STEP_KEYS.includes(st.id) ? tr('f_st_' + st.id) : st.label);
 
 const FORMS = {
   machine() {
     if (!state.scanned) return null;
     const pf = state.preflight, bad = pf.filter((c) => c.required && !c.ok), opt = pf.filter((c) => !c.required && !c.ok);
-    const out = fhead('Your computer', bad.length ? bad.length + ' required item needs attention. Fix it below, then press Check again.' : 'Everything required is here. ' + (opt.length ? opt.length + ' optional extra(s) are missing, fine to skip.' : 'Nothing missing.'));
+    const out = fhead(stepTitle('machine'), bad.length ? tr('f_mBad', bad.length) : tr('f_mOk') + ' ' + (opt.length ? tr('f_mOpt', opt.length) : tr('f_mNone')));
     bad.concat(opt, pf.filter((c) => c.ok)).forEach((c) => {
       const dot = c.ok ? 'ok' : (c.required ? 'bad' : 'warn');
       const extra = [];
       if (!c.ok && INSTALLABLE.includes(c.id)) extra.push(installLegacy(c.id));
-      else extra.push(el('span', { className: 'chip ' + dot, textContent: c.ok ? 'Ready' : (c.required ? 'Required' : 'Optional') }));
-      out.push(frow(dot, FRIENDLY[c.id] || c.label, c.detail || '', ...extra));
+      else extra.push(el('span', { className: 'chip ' + dot, textContent: c.ok ? tr('f_ready') : (c.required ? tr('f_required') : tr('f_optChip')) }));
+      out.push(frow(dot, friendly(c), c.detail || '', ...extra));
       if (!c.ok && c.fix && !INSTALLABLE.includes(c.id)) out.push(copyCmd(c.fix));
     });
     return out;
   },
   memory() {
-    const out = fhead('Your nest', 'One folder of plain text files that Claude reads at the start of every session, in any project. This is your second brain.');
+    const out = fhead(stepTitle('memory'), tr('f_nLead'));
     const hubIn = el('input', { type: 'text', value: shortPath((state.cfg && state.cfg.hub) || (state.profile && state.profile.hub_default) || ''), id: 'hub-path' });
-    out.push(el('div', { className: 'field' }, el('label', { htmlFor: 'hub-path', textContent: 'Where to keep it' }), hubIn,
-      el('div', { className: 'note', textContent: 'The default is fine. You can open this folder in Obsidian later.' })));
+    out.push(el('div', { className: 'field' }, el('label', { htmlFor: 'hub-path', textContent: tr('f_nWhere') }), hubIn,
+      el('div', { className: 'note', textContent: tr('f_nDefault') })));
     if (hubReady()) {
-      const again = el('button', { className: 'sbtn', type: 'button', textContent: 'Run setup again' });
+      const again = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_nRerun') });
       again.addEventListener('click', doNest);
-      out.push(el('div', { className: 'inline' }, again, el('span', { className: 'note', textContent: 'Safe to run twice.' })));
-    } else out.push(el('p', { className: 'note', textContent: 'Creates the folder, turns on history and the basic skills, and connects the free tools. Safe to run twice.' }));
-    if (state.setupFailure) out.push(frow('bad', 'That didn’t work', state.setupFailure));
+      out.push(el('div', { className: 'inline' }, again, el('span', { className: 'note', textContent: tr('f_nSafe') })));
+    } else out.push(el('p', { className: 'note', textContent: tr('f_nCreates') }));
+    if (state.setupFailure) out.push(frow('bad', tr('f_nFail'), state.setupFailure));
     if (state.setupResult && state.setupResult.steps) {
-      state.setupResult.steps.forEach((st) => out.push(frow(st.ok ? 'ok' : 'warn', st.label, st.ok ? (st.detail && st.detail.skipped ? 'Skipped: ' + st.detail.reason : 'Done') : (st.error || 'Needs a look'))));
+      state.setupResult.steps.forEach((st) => out.push(frow(st.ok ? 'ok' : 'warn', stepLabel(st), st.ok ? (st.detail && st.detail.skipped ? tr('f_skipped', st.detail.reason) : tr('f_done')) : (st.error || tr('f_look')))));
     }
     const obs = state.preflight.find((c) => c.id === 'obsidian');
-    out.push(el('div', { className: 'sl', textContent: 'Optional: see it in Obsidian' }));
+    out.push(el('div', { className: 'sl', textContent: tr('f_oTitle') }));
     if (obs && obs.ok) {
-      const vIn = el('input', { type: 'text', placeholder: 'Path to your Obsidian vault, e.g. ~/Documents/Notes', value: shortPath((state.cfg && state.cfg.obsidian_vault) || '') });
-      vIn.setAttribute('aria-label', 'Obsidian vault path');
-      const b = el('button', { className: 'sbtn', type: 'button', textContent: 'Link' });
+      const vIn = el('input', { type: 'text', placeholder: tr('f_oPh'), value: shortPath((state.cfg && state.cfg.obsidian_vault) || '') });
+      vIn.setAttribute('aria-label', tr('f_oAria'));
+      const b = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_oLink') });
       const msg = el('div', { className: 'msg', role: 'status' });
       b.addEventListener('click', async () => {
-        const done = busy(b, 'Linking');
+        const done = busy(b, tr('f_linking'));
         try {
           const r = await post('/api/config', { obsidian_vault: vIn.value.trim() });
           state.cfg = { ...state.cfg, ...(r.config || {}) };
           const ok = r.vault_link && r.vault_link.linked;
           msg.className = 'msg ' + (ok ? 'ok' : 'bad');
-          msg.textContent = ok ? 'Linked. Your Shufi memory now shows up as a folder inside your vault.' : 'Couldn’t link that folder.';
+          msg.textContent = ok ? tr('f_oOk') : tr('f_oBad');
         } catch (e) { msg.className = 'msg bad'; msg.textContent = e.message; }
         done();
       });
       out.push(el('div', { className: 'inline' }, vIn, b), msg);
-    } else out.push(frow('', 'Obsidian isn’t installed', 'Optional. Install it from the Tools step if you want to browse your memory as notes.'));
+    } else out.push(frow('', tr('f_oNone'), tr('f_oNoneMeta')));
     return out;
   },
   skills() {
@@ -1639,86 +1672,85 @@ const FORMS = {
     }, tr('eli'))), msg];
   },
   tools() {
-    const list = generalTools(), out = fhead('Tools', 'Programs and connections Claude can use for you. Press Install or Connect: each one says what it’s for. Skip any you don’t need.');
-    if (!list.length) { out.push(frow('warn', 'Couldn’t read the tool list', 'Restart setup with /shufi-setup.')); return out; }
+    const list = generalTools(), out = fhead(stepTitle('tools'), tr('f_tLead'));
+    if (!list.length) { out.push(frow('warn', tr('f_tNoList'), tf('f_tRestart', '/shufi-setup'))); return out; }
     const ready = list.filter((t) => t.state === 'ready').length;
-    out.push(el('p', { className: 'note', textContent: ready + ' of ' + list.length + ' ready. Recommended ones are marked; the rest are for when you need them.' }));
+    out.push(el('p', { className: 'note', textContent: tr('f_tCount', ready, list.length) }));
     list.forEach((t) => out.push(toolCard(t)));
     return out;
   },
   workspace() {
     const p = state.profile.workspace || {}, list = teamTools();
-    const out = fhead(p.title || 'Team workspace', p.lead || 'Connect to the shared team knowledge and code.');
-    if (p.intro) p.intro.forEach((line) => out.push(el('p', { className: 'note', textContent: line })));
+    const out = fhead(p.title || stepTitle('workspace'), p.lead || tr('f_wLead'));
+    if (p.intro) p.intro.forEach((line) => out.push(el('p', { className: 'note', dir: 'auto', textContent: line })));
     list.forEach((t) => out.push(toolCard(t)));
     if (p.first_prompt) {
-      out.push(el('div', { className: 'sl', textContent: 'Your first message to Claude' }));
-      out.push(el('p', { className: 'note', textContent: 'Open Claude Code and paste this. It reads the team briefing and tells you where things stand.' }));
+      out.push(el('div', { className: 'sl', textContent: tr('f_wFirst') }));
+      out.push(el('p', { className: 'note', textContent: tr('f_wFirstNote') }));
       out.push(copyCmd(p.first_prompt));
     }
     return out;
   },
   phone() {
-    const out = fhead('Phone & voice', 'Optional. Message Claude from Telegram when you’re away from your desk, and talk to it instead of typing.');
+    const out = fhead(stepTitle('phone'), tr('f_pLead'));
     const tg = state.telegram || {};
     out.push(el('div', { className: 'sl', textContent: 'Telegram' }));
-    out.push(frow('', '1 · Make a bot', 'In Telegram, message BotFather and send /newbot.', el('a', { className: 'sbtn', href: 'https://t.me/BotFather', target: '_blank', rel: 'noopener', textContent: 'Open BotFather' })));
-    const tok = el('input', { type: 'password', placeholder: '123456789:AA…', autocomplete: 'off' }); tok.setAttribute('aria-label', 'Telegram bot token');
-    const save = el('button', { className: 'sbtn', type: 'button', textContent: 'Save' });
+    out.push(frow('', tr('f_p1'), tf('f_p1m', '/newbot'), el('a', { className: 'sbtn', href: 'https://t.me/BotFather', target: '_blank', rel: 'noopener', textContent: tr('f_p1b') })));
+    const tok = el('input', { type: 'password', placeholder: '123456789:AA…', autocomplete: 'off' }); tok.setAttribute('aria-label', tr('f_pAria'));
+    const save = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_save') });
     const tmsg = el('div', { className: 'msg', role: 'status' });
     save.addEventListener('click', async () => {
-      const done = busy(save, 'Saving');
-      try { await post('/api/telegram-token', { value: tok.value.trim() }); tok.value = ''; tmsg.className = 'msg ok'; tmsg.textContent = 'Saved.'; }
+      const done = busy(save, tr('f_saving'));
+      try { await post('/api/telegram-token', { value: tok.value.trim() }); tok.value = ''; tmsg.className = 'msg ok'; tmsg.textContent = tr('f_savedShort'); }
       catch (e) { tmsg.className = 'msg bad'; tmsg.textContent = e.message; }
       done();
     });
-    out.push(el('div', { className: 'field' }, el('div', { className: 'fl', textContent: '2 · Paste the token it gives you' }), el('div', { className: 'inline' }, tok, save), tmsg));
-    const conn = el('button', { className: 'sbtn', type: 'button', textContent: 'Connect' });
+    out.push(el('div', { className: 'field' }, el('div', { className: 'fl', textContent: tr('f_p2') }), el('div', { className: 'inline' }, tok, save), tmsg));
+    const conn = el('button', { className: 'sbtn', type: 'button', textContent: tr('connectBtn') });
     conn.addEventListener('click', async () => {
-      const done = busy(conn, 'Connecting');
-      try { const r = await post('/api/telegram-install'); done(); conn.textContent = r.ok ? 'Connected' : 'Didn’t work'; } catch (e) { done(); conn.textContent = e.message; }
+      const done = busy(conn, tr('f_connecting'));
+      try { const r = await post('/api/telegram-install'); done(); conn.textContent = r.ok ? tr('connected') : tr('f_failed'); } catch (e) { done(); conn.textContent = e.message; }
     });
-    out.push(frow('', '3 · Connect it', 'Runs on this computer.', conn));
-    const chk = el('button', { className: 'sbtn', type: 'button', textContent: 'Check' });
+    out.push(frow('', tr('f_p3'), tr('f_p3m'), conn));
+    const chk = el('button', { className: 'sbtn', type: 'button', textContent: tr('f_check') });
     const pair = el('div', { className: 'field' });
     chk.addEventListener('click', async () => {
       try {
         state.telegram = await api('/api/telegram-status');
         pair.replaceChildren();
         if (state.telegram.pending && state.telegram.pending.length) {
-          pair.append(el('div', { className: 'note', textContent: 'Last step: paste this into Claude Code:' }));
+          pair.append(el('div', { className: 'note', textContent: tr('f_pLast') }));
           state.telegram.pending.forEach((pp) => pair.append(copyCmd('/telegram:access pair ' + pp.code)));
-        } else pair.append(el('div', { className: 'note', textContent: state.telegram.configured ? 'Connected.' : 'Nothing yet. Send your bot a message first.' }));
+        } else pair.append(el('div', { className: 'note', textContent: state.telegram.configured ? tr('connected') + '.' : tr('f_pNone') }));
       } catch (e) { pair.replaceChildren(el('div', { className: 'msg bad', textContent: e.message })); }
       paintTop(); paintGround(); renderGuide(true);
     });
-    out.push(frow(tg.configured ? 'ok' : '', '4 · Say hello to your bot', 'Send it any message, then press Check.', chk), pair);
-    out.push(el('details', {}, el('summary', { textContent: 'One thing worth knowing' }),
-      el('p', { className: 'note', textContent: 'Telegram lets only one program listen to a bot. Run this on one computer only: a second one silently swallows messages.' })));
-    out.push(el('div', { className: 'sl', textContent: 'Voice' }));
+    out.push(frow(tg.configured ? 'ok' : '', tr('f_p4'), tr('f_p4m'), chk), pair);
+    out.push(el('details', {}, el('summary', { textContent: tr('f_pKnow') }), el('p', { className: 'note', textContent: tr('f_pKnowBody') })));
+    out.push(el('div', { className: 'sl', textContent: tr('f_pVoice') }));
     const voice = state.skills.find((s) => s.id === 'voice');
     if (voice) {
-      out.push(frow(voice.enabled ? 'ok' : '', 'Talk to it, hear it answer', 'Speech recognition runs on your own computer. Needs ffmpeg.',
+      out.push(frow(voice.enabled ? 'ok' : '', tr('f_pVoiceN'), tf('f_pVoiceM', 'ffmpeg'),
         sw(voice.enabled, voice.precondition_met === false, async (i) => {
           try { const r = await post('/api/skills', { id: 'voice', enabled: i.checked }); voice.enabled = r.enabled; } catch { i.checked = !i.checked; }
           repaint();
-        }, 'Voice')));
-      if (voice.enabled) out.push(secretField('ELEVENLABS_API_KEY', 'Nicer voices (ElevenLabs key), optional'));
+        }, tr('f_pVoice'))));
+      if (voice.enabled) out.push(secretField('ELEVENLABS_API_KEY', tr('f_pEleven')));
     }
     return out;
   },
   finish() {
-    const p = state.profile.finish || DEFAULT_PROFILE.finish;
-    const out = fhead(p.headline || "You're set.", 'Close this tab whenever you like. Everything below is how you use it from now on.');
+    const p = state.profile.finish || DEFAULT_PROFILE.finish, d = DEFAULT_PROFILE.finish;
+    const out = fhead(pfText(p.headline || d.headline, d.headline, 'f_fHead'), tr('f_fLead'));
     const missing = stepList().filter((x) => x !== 'finish' && !STEP_DEFS[x].optional && stepStatus(x).s !== 'ok');
     if (missing.length) {
-      const note = el('p', { className: 'note' }, el('b', { textContent: 'Still open: ' }));
-      missing.forEach((m, i) => { const a = el('button', { type: 'button', className: 'lnk', textContent: stepTitle(m, true) }); a.addEventListener('click', () => go(m, { focus: true })); note.append(i ? document.createTextNode(', ') : '', a); });
+      const note = el('p', { className: 'note' }, el('b', { textContent: tr('f_fOpen') }));
+      missing.forEach((m, i) => { const a = el('button', { type: 'button', className: 'lnk', textContent: stepTitle(m) }); a.addEventListener('click', () => go(m, { focus: true })); note.append(i ? document.createTextNode(', ') : '', a); });
       out.push(note);
     }
     const ul = el('ul', { className: 'dlist' });
-    (p.lines || []).forEach((line, i) => ul.append(el('li', {}, el('span', { className: 'k', textContent: String(i + 1) }), el('div', { textContent: line }))));
-    out.push(ul, el('div', { className: 'sl', textContent: 'Handy commands' }));
+    (p.lines || []).forEach((line, i) => ul.append(el('li', {}, el('span', { className: 'k', textContent: String(i + 1) }), el('div', { dir: 'auto', textContent: d.lines[i] === line ? tr('f_fL' + (i + 1)) : line }))));
+    out.push(ul, el('div', { className: 'sl', textContent: tr('f_fCmds') }));
     (p.commands || ['/shufi-setup', '/done']).forEach((c) => out.push(copyCmd(c)));
     return out;
   },
@@ -1727,8 +1759,7 @@ function renderStepForm() {
   const f = $('#stepform'), id = state.current;
   const kids = (FORMS[id] ? FORMS[id]() : null);
   if (!kids || !kids.filter(Boolean).length) { f.hidden = true; f.replaceChildren(); return; }
-  /* the Skills note is translated; the other forms stay English, left to right, inside a Hebrew page */
-  if (id === 'skills' || LANG === 'en') { f.removeAttribute('dir'); f.removeAttribute('lang'); } else { f.dir = 'ltr'; f.lang = 'en'; }
+  f.removeAttribute('dir'); f.removeAttribute('lang');   // every form follows the page language and direction
   f.hidden = false; f.replaceChildren(...kids.filter(Boolean));
 }
 
@@ -1919,12 +1950,12 @@ function detailNodes(it) {
   const extra = el('div', { className: 'dx' });
   const msg = el('div', { className: 'msg bad', role: 'alert', textContent: ERR[it.key] || '' });
   if (st === 'needskey' && !ing) {
-    const secretIn = el('input', { type: 'password', placeholder: r.secret.placeholder || 'Paste it here', autocomplete: 'off' });
+    const secretIn = el('input', { type: 'password', placeholder: r.secret.placeholder || tr('f_paste'), autocomplete: 'off' });
     secretIn.setAttribute('aria-label', r.secret.label || 'Secret');
     extra.append(el('div', { className: 'field' }, el('div', { className: 'fl', textContent: r.secret.label }), secretIn, r.secret.help ? el('div', { className: 'note', textContent: r.secret.help }) : null));
     const go2 = el('button', { type: 'button', className: 'ibtn', textContent: tr(isMcp ? 'connectBtn' : 'installBtn') });
     go2.addEventListener('click', async () => {
-      if (!secretIn.value.trim()) { msg.textContent = 'Paste ' + (r.secret.label || 'the key') + ' first.'; secretIn.focus(); return; }
+      if (!secretIn.value.trim()) { msg.textContent = tr('f_pasteFirst', r.secret.label || tr('f_theKey')); secretIn.focus(); return; }
       go2.disabled = true; INSTALLING.add(it.key); msg.textContent = '';
       const res = await installOne(it, secretIn.value.trim());
       INSTALLING.delete(it.key);
