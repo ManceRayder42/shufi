@@ -108,3 +108,29 @@ test('server: serves the page with its CSP, the owl poses behind the token, and 
     assert.equal(tl.tools.length, tools.length);
   } finally { child.kill(); }
 });
+
+test('server: fonts are served from an allowlist behind the token, with the CSP allowing font-src self', async () => {
+  const { child, base, token } = await startServer();
+  try {
+    const home = await fetch(`${base}/?t=${token}`);
+    assert.match(home.headers.get('content-security-policy') || '', /font-src 'self'/);
+    for (const name of ['fraunces-latin-full', 'figtree-latin']) {
+      const f = await fetch(`${base}/assets/fonts/${name}.woff2?t=${token}`);
+      assert.equal(f.status, 200, name);
+      assert.equal(f.headers.get('content-type'), 'font/woff2');
+      const buf = Buffer.from(await f.arrayBuffer());
+      assert.equal(buf.subarray(0, 4).toString(), 'wOF2', 'a real woff2 file');
+      assert.equal((await fetch(`${base}/assets/fonts/${name}.woff2`)).status, 403, 'no token, no font');
+    }
+    assert.equal((await fetch(`${base}/assets/fonts/..%2Fserver.woff2?t=${token}`)).status, 404, 'allowlist, not a path join');
+    assert.equal((await fetch(`${base}/assets/fonts/OFL-fraunces.woff2?t=${token}`)).status, 404, 'names outside the table are unknown');
+    assert.equal((await fetch(`${base}/assets/fonts/fraunces-latin-full.txt?t=${token}`)).status, 404, 'only .woff2 is routed');
+  } finally { child.kill(); }
+});
+
+test('fonts: the licence text ships next to the fonts (SIL OFL 1.1)', () => {
+  for (const n of ['fraunces', 'figtree']) {
+    const t = fs.readFileSync(path.join(ROOT, 'setup', 'assets', 'fonts', `OFL-${n}.txt`), 'utf8');
+    assert.match(t, /SIL OPEN FONT LICENSE Version 1\.1/);
+  }
+});
