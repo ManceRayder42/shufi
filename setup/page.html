@@ -445,8 +445,8 @@ html{background:var(--sky-a)}
 }
 .btag.bun .coin{position:relative;display:block;left:auto;top:auto;margin:0 0 3px;width:24px;height:24px}
 .btag{scale:var(--tk,1)}
-.btag.hid{opacity:0;transform:scale(.5);pointer-events:none}
-#items .btag{transition:opacity .55s,transform .6s cubic-bezier(.2,.9,.3,1.3)}
+.btag.hid{opacity:0;transform:scale(.5);pointer-events:none;visibility:hidden}
+#items .btag{transition:opacity .55s,transform .6s cubic-bezier(.2,.9,.3,1.3),visibility .55s}
 .btag small{min-height:1.2em}
 .btag:focus-visible{outline:3px solid var(--orange);outline-offset:4px;border-radius:13px}
 .btag.fresh:focus-visible,.btag:focus-visible{outline-color:var(--ink)}
@@ -470,11 +470,9 @@ html{background:var(--sky-a)}
 .sh-win:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
 #perm{color:var(--ink)}
 
-#shufi.has-form .sh-win{width:min(12.6rem,22vh);height:min(12.8rem,22.4vh);border-radius:6.3rem 6.3rem .9rem .9rem}
-#shufi.has-form .sh-win::after{border-radius:6.1rem 6.1rem .7rem .7rem}
-#shufi.has-form .sh-win .glass{border-radius:5.8rem 5.8rem .4rem .4rem}
 #files .fp{max-width:21rem;overflow:hidden;text-overflow:ellipsis}
 /* connection lost: the owl says so and everything else waits */
+body.offline .sh-who i{background:#e0645a;box-shadow:0 0 0 .2rem rgba(224,100,90,.25)}
 body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offline #prog,body.offline #topic{opacity:.55;pointer-events:none}
 
 /* step forms: the real controls, in the same felt */
@@ -615,6 +613,7 @@ body.offline #treecol,body.offline #stepform,body.offline .sh-actions,body.offli
 @keyframes pop2{0%{opacity:0;transform:translateY(4px)}100%{opacity:1}}
 
 @media (max-width:700px){
+  #topics-m.off{display:none}
   html,body{height:auto}
   body{overflow-x:hidden;overflow-y:auto}
   #app{display:block;height:auto}
@@ -710,7 +709,7 @@ const I18N = {
     lookAt: 'Look at this computer', checkAgain: 'Check again', makeNest: 'Make my nest', addKit: "Add {0}'s kit", installX: 'Install {0}', skipNow: 'Skip for now', goTo: 'Go to {0}', browse: 'Browse more tools',
     working: 'Working…', looking: 'Looking…', makingNest: 'Making it…',
     permLine: 'First, may I look at your computer?',
-    perm: [['Your AI tool will ask to approve each step.', ' Say yes, it is safe.'], ['I only touch what you pick.', ' Nothing else, nowhere else.'], ['Small helpers install in the background,', ' using few tokens.']],
+    perm: [['I only look first.', ' Nothing on this computer changes yet.'], ['I install only what you pick.', ' Nothing else, nowhere else.'], ['Your notes and keys are saved here,', ' on this computer.']],
     notNowLine: 'No problem. Look around freely, I will wait.',
     scanTitle: 'This computer', scanSub0: 'Not looked at yet.', scanSub1: 'I only look. I change nothing.', found: 'Found', notHere: 'Not here', ready: 'Ready.',
     phoneChat: 'Phone chat', phoneOptional: 'Optional', phoneLinked: 'Connected',
@@ -738,14 +737,14 @@ const I18N = {
     SAY_tools: 'Tools live on the same branches. Tap a topic to see what it holds.', DONE_tools: 'Tools are in. Add a bundle, or just one.',
     SAY_workspace: "Let's plug in your team's workspace.", DONE_workspace: 'The team workspace is connected.',
     SAY_phone: 'Optional: want to talk to me from your phone?', DONE_phone: 'Phone is linked.',
-    DONE_finish: 'All set. Open your AI tool and say “remember this”. Come back any time, or just ask me.',
-    MORE_machine: 'I look at which AI coding tools are on your computer, like Claude Code, Codex and Cursor. I only read, I change nothing. That tells me where to connect your nest.',
-    MORE_memory: 'The nest is one folder of plain notes. I read it at the start of every chat, in any project and any of your tools. The files are yours, and you can open them any time.',
+    DONE_finish: 'All set. Open Claude Code in any folder. I already know you.',
+    MORE_machine: 'I check what Claude Code needs on your computer: Node.js, Claude Code itself, and a few optional extras like git. I only read, I change nothing. If something is missing, I show how to fix it.',
+    MORE_memory: 'The nest is one folder of plain text notes. Claude reads it at the start of every session, in any project. The files are yours, and you can open them any time.',
     MORE_skills: 'Skills are things I can do for you, like researching with sources or turning a web page into clean notes. My kit is the usual set. Every skill has its own page, so you can add just one.',
     MORE_tools: 'Tools let me act on your computer, like opening websites or putting a site online. A topic installs a group at once, or you can pick a single tool. A few need a key or a sign-in once.',
     MORE_workspace: 'Connect to the shared team knowledge and code.',
     MORE_phone: 'This step is optional. A private link lets you message me from your phone. You can skip it and still use everything else.',
-    MORE_finish: 'Come back to this page any time: it opens right where you are now. Or skip the page and ask me in your AI tool to add tools or skills. Everything here also works from the command line.',
+    MORE_finish: 'Come back to this page any time: it opens right where you are now. Or skip the page and ask me in Claude Code to add tools or skills.',
     finOpen: 'Almost there. A couple of steps are still open.',
     tricks: [['cheer', 'Hoo! Still here.'], ['point', 'Pick a branch, any branch.'], ['brush', 'I do love a good design.'], ['camera', 'Say cheese.'], ['key', 'Keys never leave your computer.'], ['celebrate', 'Hooray!'], ['worried', 'Whoa, easy on the clicking!']],
   },
@@ -758,7 +757,7 @@ const I18N = {
     lookAt: 'להציץ במחשב', checkAgain: 'לבדוק שוב', makeNest: 'ליצור את הקן', addKit: 'להוסיף את הערכה של {0}', installX: 'להתקין את {0}', skipNow: 'לדלג בינתיים', goTo: 'לעבור אל {0}', browse: 'עוד כלים',
     working: 'עובד…', looking: 'מציץ…', makingNest: 'יוצר…',
     permLine: 'קודם, מותר לי להציץ במחשב שלכם?',
-    perm: [['כלי ה-AI שלכם ישאל לאשר כל צעד.', ' תגידו כן, זה בטוח.'], ['אני נוגע רק במה שתבחרו.', ' שום דבר אחר, בשום מקום אחר.'], ['עוזרים קטנים מתקינים ברקע,', ' בעלות נמוכה.']],
+    perm: [['אני רק מציץ בהתחלה.', ' שום דבר במחשב עוד לא משתנה.'], ['אני מתקין רק מה שתבחרו.', ' שום דבר אחר, בשום מקום אחר.'], ['הפתקים והמפתחות שלכם נשמרים כאן,', ' על המחשב הזה.']],
     notNowLine: 'אין בעיה. הסתכלו חופשי, אני אחכה.',
     scanTitle: 'המחשב הזה', scanSub0: 'עוד לא הצצתי.', scanSub1: 'אני רק מסתכל. לא משנה כלום.', found: 'נמצא', notHere: 'לא כאן', ready: 'מוכן.',
     phoneChat: 'צ׳אט בטלפון', phoneOptional: 'אופציונלי', phoneLinked: 'מחובר',
@@ -787,13 +786,13 @@ const I18N = {
     SAY_workspace: 'בואו נחבר את סביבת העבודה של הצוות.', DONE_workspace: 'סביבת הצוות מחוברת.',
     SAY_phone: 'רוצים לדבר איתי מהטלפון? לגמרי אופציונלי.', DONE_phone: 'הטלפון מחובר.',
     DONE_finish: 'הכול מוכן! פתחו את Claude Code בכל מקום. אני כבר מכיר אתכם.',
-    MORE_machine: 'אני בודק אילו כלי AI לקוד יש על המחשב שלכם, כמו Claude Code, Codex ו-Cursor. אני רק קורא, לא משנה כלום. ככה אני יודע לאן לחבר את הקן.',
-    MORE_memory: 'הקן הוא תיקייה אחת של פתקים בטקסט פשוט. אני קורא אותו בתחילת כל שיחה, בכל פרויקט ובכל הכלים שלכם. הקבצים שלכם ואפשר לפתוח אותם בכל רגע.',
+    MORE_machine: 'אני בודק מה Claude Code צריך על המחשב שלכם: Node.js, Claude Code עצמו, וכמה תוספות אופציונליות כמו git. אני רק קורא, לא משנה כלום. אם משהו חסר, אני מראה איך לתקן.',
+    MORE_memory: 'הקן הוא תיקייה אחת של פתקים בטקסט פשוט. Claude קורא אותו בתחילת כל סשן, בכל פרויקט. הקבצים שלכם ואפשר לפתוח אותם בכל רגע.',
     MORE_skills: 'סקילים הם דברים שאני יכול לעשות בשבילכם, כמו מחקר עם מקורות או הפיכת דף אינטרנט לפתקים נקיים. הערכה היא הסט הרגיל. לכל סקיל יש דף משלו, אז אפשר להוסיף רק אחד.',
     MORE_tools: 'כלים נותנים לי לפעול על המחשב, כמו לפתוח אתרים או להעלות אתר לאוויר. נושא מתקין קבוצה בבת אחת, או שבוחרים כלי אחד. כמה מהם צריכים מפתח או התחברות פעם אחת.',
     MORE_workspace: 'התחברות לידע ולקוד המשותפים של הצוות.',
     MORE_phone: 'הצעד הזה אופציונלי. קישור פרטי נותן לכם לכתוב לי מהטלפון. אפשר לדלג ועדיין להשתמש בכל השאר.',
-    MORE_finish: 'אפשר לחזור לדף הזה בכל רגע: הוא נפתח בדיוק איפה שאתם עכשיו. או לדלג על הדף ולבקש ממני בכלי ה-AI להוסיף כלים וסקילים. כל מה שכאן עובד גם משורת הפקודה.',
+    MORE_finish: 'אפשר לחזור לדף הזה בכל רגע: הוא נפתח בדיוק איפה שאתם עכשיו. או לדלג על הדף ולבקש ממני ב-Claude Code להוסיף כלים וסקילים.',
     finOpen: 'כמעט שם. עוד כמה צעדים פתוחים.',
     tricks: [['cheer', 'הו! אני עדיין כאן.'], ['point', 'בחרו ענף, כל ענף.'], ['brush', 'אני אוהב עיצוב טוב.'], ['camera', 'חייכו לצילום.'], ['key', 'מפתחות לא עוזבים את המחשב שלכם.'], ['celebrate', 'הידד!'], ['worried', 'וואו, לאט עם הלחיצות!']],
   },
@@ -1467,7 +1466,7 @@ function go(id, opts = {}) {
 function paintReveal() {
   const ids = stepList(), at = ids.indexOf('skills');
   const reached = at < 0 || state.reach >= at;
-  $('#treebar').classList.toggle('off', !reached);
+  $('#treebar').classList.toggle('off', !reached); $('#topics-m').classList.toggle('off', !reached);
   if (reached && TREE && !TREE.shown) {
     TREE.shown = true; requestAnimationFrame(() => { fitScene(); revealTree(); setTimeout(paintTree, 50); });
   }
@@ -1727,11 +1726,10 @@ const FORMS = {
 function renderStepForm() {
   const f = $('#stepform'), id = state.current;
   const kids = (FORMS[id] ? FORMS[id]() : null);
-  if (!kids || !kids.filter(Boolean).length) { f.hidden = true; f.replaceChildren(); $('#shufi').classList.remove('has-form'); return; }
+  if (!kids || !kids.filter(Boolean).length) { f.hidden = true; f.replaceChildren(); return; }
   /* the Skills note is translated; the other forms stay English, left to right, inside a Hebrew page */
   if (id === 'skills' || LANG === 'en') { f.removeAttribute('dir'); f.removeAttribute('lang'); } else { f.dir = 'ltr'; f.lang = 'en'; }
   f.hidden = false; f.replaceChildren(...kids.filter(Boolean));
-  $('#shufi').classList.toggle('has-form', id !== 'skills');
 }
 
 /* ==========================================================================
@@ -2067,7 +2065,6 @@ function wireShell() {
     }
     if (e.metaKey || e.ctrlKey || e.altKey || inField) return;
     if (e.key === '/') { e.preventDefault(); advShow(true); }
-    else if (e.key === '1') { e.preventDefault(); runPrimary(); }
     else if (e.key === '2') { const b = $('#shufi-sec'); if (!b.hidden && !b.disabled && !state.busy && b._run) { e.preventDefault(); b._run(); } }
   });
 }
