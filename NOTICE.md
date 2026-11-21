@@ -26,8 +26,8 @@ reasons, not quality ones.
   which means no grant to redistribute it. Install it yourself from the source
   above.
 - **nano-banana** — image generation and editing, with a free tier. Licensed
-  AGPL-3.0. AGPL is copyleft: bundling it would pull this entire plugin under
-  AGPL, so it stays a separate install.
+  MIT again since 2026-09-30 (upstream LICENSE and LICENSING.md), after a short
+  AGPL-3.0 period. It stays a separate install, listed in the skills catalog.
 
 ## Original to this project
 
