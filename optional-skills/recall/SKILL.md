@@ -54,16 +54,16 @@ The hooks are registered for everyone but do nothing until opted in.
 ## Using it
 
 1. **Auto notes first** (cheap, already summarized):
-   `node "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/search.mjs" <term> [more terms] --notes-only`
+   `sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/search.mjs" <term> [more terms] --notes-only`
    lists matching notes; then read the 1 to 3 relevant files in
    `<hub>/staging/session-notes/`.
 2. **Transcripts second**, only if the notes do not answer it:
-   `node "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/search.mjs" <term> [more terms] [--all] [--limit N]`
+   `sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/search.mjs" <term> [more terms] [--all] [--limit N]`
    prints date, session id and a short redacted snippet per hit. It reads user
    prompts and assistant text only, never tool results. `--all` searches every
    project instead of the current one.
 3. If one session clearly holds the answer, read just that part: run
-   `node "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/extract.mjs" ~/.claude/projects/<project-folder>/<session-id>.jsonl`
+   `sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/recall/scripts/extract.mjs" ~/.claude/projects/<project-folder>/<session-id>.jsonl`
    (a compact, secret-filtered digest). Do not Read raw `.jsonl` files.
 
 ## Rules

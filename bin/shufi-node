@@ -1,0 +1,60 @@
+#!/bin/sh
+# shufi-node: run a script with a Node.js the user may not have installed.
+#
+#   sh bin/shufi-node [--hook] <script.mjs> [args...]
+#
+# Picks the first Node.js that is at least version 18 (global fetch and
+# AbortSignal.timeout, which setup/server.mjs and setup/agent.mjs use):
+#   1. `node` on PATH, if it is 18 or newer
+#   2. ~/.shufi/runtime/node-v*/bin/node, the private copy `shufi start` downloads
+# then replaces itself with it (exec), so stdin, stdout, stderr and the exit code
+# are Node's own.
+#
+# If there is no usable Node.js:
+#   --hook given  Hooks must never break a session: exit 0. The message goes to
+#                 stderr; stdout (which Claude Code injects into the model's
+#                 context) gets it at most once a day.
+#   otherwise     Print the message to stderr and exit 1.
+#
+# SHUFI_HOME overrides ~/.shufi. Keep the Node lookup in step with bin/shufi.
+
+NODE_MIN_MAJOR=18
+SHUFI_HOME="${SHUFI_HOME:-${HOME:-/nonexistent}/.shufi}"
+
+hook=0
+if [ "${1:-}" = "--hook" ]; then
+  hook=1
+  shift
+fi
+
+good_node() {
+  v=$("$1" -v 2>/dev/null) || return 1
+  v=${v#v}
+  v=${v%%.*}
+  case $v in '' | *[!0-9]*) return 1 ;; esac
+  [ "$v" -ge "$NODE_MIN_MAJOR" ]
+}
+
+p=$(command -v node 2>/dev/null)
+if [ -n "$p" ] && good_node "$p"; then
+  exec "$p" "$@"
+fi
+
+for p in "$SHUFI_HOME"/runtime/node-v*/bin/node; do
+  if [ -x "$p" ] && good_node "$p"; then
+    exec "$p" "$@"
+  fi
+done
+
+msg="Shufi needs Node.js $NODE_MIN_MAJOR or newer and found none. Run: shufi start"
+if [ "$hook" = 1 ]; then
+  printf '[shufi] %s\n' "$msg" >&2
+  stamp="$SHUFI_HOME/.no-node-nudge"
+  if [ -z "$(find "$stamp" -mtime -1 2>/dev/null)" ]; then
+    printf '[shufi] %s (memory is off until then).\n' "$msg"
+    mkdir -p "$SHUFI_HOME" 2>/dev/null && : >"$stamp" 2>/dev/null
+  fi
+  exit 0
+fi
+printf '[shufi] %s\n' "$msg" >&2
+exit 1

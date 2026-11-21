@@ -60,7 +60,7 @@ const T = {
   n_qmd_no: { en: 'qmd not found (optional). Get it: npm install -g @tobilu/qmd', he: 'qmd לא נמצא (אופציונלי). להתקנה: npm install -g @tobilu/qmd' },
   n_check_wired: { en: 'SessionStart hook wired (runs at most once a day)', he: 'הוק SessionStart מחובר (רץ לכל היותר פעם ביום)' },
   n_check_clean: { en: '; checked now: clean ({0} files)', he: '; נבדק עכשיו: נקי ({0} קבצים)' },
-  n_check_found: { en: '; checked now: {0} possibly-stale items (run: node "{1}" --force)', he: '; נבדק עכשיו: {0} פריטים אולי ישנים (להרצה: node "{1}" --force)' },
+  n_check_found: { en: '; checked now: {0} possibly-stale items (run: sh "{2}" "{1}" --force)', he: '; נבדק עכשיו: {0} פריטים אולי ישנים (להרצה: sh "{2}" "{1}" --force)' },
   n_check_skipped: { en: '; not run now (dry run, hub not created yet)', he: '; לא הורץ עכשיו (הרצה יבשה, התיקייה עדיין לא נוצרה)' },
   n_check_off: { en: '; currently OFF ({0})', he: '; כרגע כבוי ({0})' },
   n_check_missing: { en: 'NOT wired in plugin.json or hook file missing', he: 'לא מחובר ב-plugin.json או שקובץ ההוק חסר' },
@@ -517,7 +517,7 @@ export async function run({ argv = process.argv.slice(2), env = process.env, hom
         const core = await import(pathToFileURL(path.join(root, 'hooks', 'lib', 'memory-check-core.mjs')).href);
         const res = core.checkMemory({ hub, home, today: core.localDate(), budgetMs: 1500, startedAt: performance.now() });
         note += res.findings.length
-          ? t('n_check_found', res.findings.length, path.join(root, 'hooks', 'memory-check.mjs'))
+          ? t('n_check_found', res.findings.length, path.join(root, 'hooks', 'memory-check.mjs'), path.join(root, 'bin', 'shufi-node'))
           : t('n_check_clean', res.stats.files);
       } catch (e) { note += ' (' + String(e.message).slice(0, 80) + ')'; }
     }

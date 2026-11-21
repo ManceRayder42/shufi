@@ -1,6 +1,6 @@
 {
   "name": "shufi",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Shufi, a felt owl that gives Claude Code, Codex and Cursor a persistent memory hub that loads into every session from any directory, plus a curated set of research and workflow skills.",
   "author": {
     "name": "Or Gelbgisser",
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs\"",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/shufi-node\" --hook \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs\"",
             "timeout": 5,
             "statusMessage": "Loading Shufi memory..."
           }
@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-recall.mjs\"",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/shufi-node\" --hook \"${CLAUDE_PLUGIN_ROOT}/hooks/session-recall.mjs\"",
             "timeout": 5
           }
         ]
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/memory-check.mjs\"",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/shufi-node\" --hook \"${CLAUDE_PLUGIN_ROOT}/hooks/memory-check.mjs\"",
             "timeout": 5
           }
         ]
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/correction-capture.mjs\"",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/shufi-node\" --hook \"${CLAUDE_PLUGIN_ROOT}/hooks/correction-capture.mjs\"",
             "timeout": 3
           }
         ]
@@ -68,7 +68,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-recall.mjs\"",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/shufi-node\" --hook \"${CLAUDE_PLUGIN_ROOT}/hooks/session-recall.mjs\"",
             "timeout": 5
           }
         ]

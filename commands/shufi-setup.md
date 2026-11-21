@@ -2,7 +2,7 @@
 name: shufi-setup
 description: Launch the local setup page to configure the Shufi memory hub
 allowed-tools:
-  - Bash(node:*)
+  - Bash(sh:*)
 ---
 
 Launch the Shufi setup server and hand the user its URL.
@@ -15,8 +15,10 @@ the terminal via `setup/agent.mjs`.
 
 1. Run:
    ```
-   node "${CLAUDE_PLUGIN_ROOT}/setup/server.mjs"
+   sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/setup/server.mjs"
    ```
+   `bin/shufi-node` uses the Node.js on the computer or the private copy that
+   `shufi start` installs, so nothing has to be installed first.
 2. The server binds `127.0.0.1` on an OS-assigned port, mints a one-time
    token, and prints a single `http://127.0.0.1:<port>/?t=<token>` URL to
    stdout before it starts listening. Read that URL from the command output.
@@ -26,8 +28,10 @@ the terminal via `setup/agent.mjs`.
 4. The server is self-managing: it heartbeats with the open tab, exits on its
    own once the tab closes or after 10 minutes idle, and is a child of this
    terminal session. Nothing else to start, stop, or clean up.
-5. If the command fails to start (port bind error, missing Node, etc.), show
-   the actual error to the user rather than guessing at a fix.
+5. If the command fails to start (port bind error, etc.), show the actual
+   error to the user rather than guessing at a fix. If it says Shufi found no
+   Node.js, tell them to run `shufi start` in a terminal (the one-line
+   installer is in the README); it installs everything that is missing.
 
 Do not run this server in the background and move on — its whole job is a
 short-lived interactive setup, so wait for the user to confirm they've

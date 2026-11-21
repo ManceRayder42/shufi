@@ -1666,7 +1666,11 @@ server.listen(0, '127.0.0.1', () => {
       : IS_WIN
         ? ['cmd', ['/c', 'start', '', url]]
         : ['xdg-open', [url]];
-    spawn(opener[0], opener[1], { stdio: 'ignore', detached: true }).unref();
+    const child = spawn(opener[0], opener[1], { stdio: 'ignore', detached: true });
+    // A machine with no `open` / `xdg-open` (a headless Linux box) reports ENOENT as an async 'error'
+    // event, which the try/catch cannot see and which would kill the server. The printed URL is the fallback.
+    child.on('error', () => {});
+    child.unref();
   } catch {
     // ignore -- the printed URL is the fallback
   }

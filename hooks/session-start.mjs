@@ -72,10 +72,10 @@ function resolveHub() {
 
 function nudge() {
   if (HOST !== 'claude') {
-    emit('[shufi] Not set up yet. Offer to do it for the user: node "' + path.join(PLUGIN_ROOT, 'setup', 'agent.mjs') + '" plan\n');
+    emit('[shufi] Not set up yet. Offer to do it for the user: sh "' + path.join(PLUGIN_ROOT, 'bin', 'shufi-node') + '" "' + path.join(PLUGIN_ROOT, 'setup', 'agent.mjs') + '" plan\n');
     return;
   }
-  emit('[shufi] Not set up yet. Offer to do it for the user (setup-for-me skill: node "$CLAUDE_PLUGIN_ROOT/setup/agent.mjs" plan), or they can run /shufi-setup for the page.\n');
+  emit('[shufi] Not set up yet. Offer to do it for the user (setup-for-me skill: sh "$CLAUDE_PLUGIN_ROOT/bin/shufi-node" "$CLAUDE_PLUGIN_ROOT/setup/agent.mjs" plan), or they can run /shufi-setup for the page.\n');
 }
 
 // Working rules live next to MEMORY.md. Optional: absent or unreadable means

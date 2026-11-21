@@ -3,9 +3,34 @@
 All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.7.0] - 2026-11-21
+
+### Added
+
+- **No Node.js needed.** `install.sh` (one line: `curl -fsSL https://raw.githubusercontent.com/ManceRayder42/shufi/master/install.sh | sh`)
+  installs a `shufi` launcher in `~/.local/bin`. `shufi start` installs what is missing, in order: a
+  private Node.js (the pinned official release from nodejs.org, checked against its
+  `SHASUMS256.txt` and a hash pinned in the launcher, unpacked into `~/.shufi/runtime`; used only
+  when the computer has no Node.js 18 or newer), Claude Code (Anthropic's installer) and the Shufi
+  plugin (from a downloaded copy when git is missing), then opens the setup screen. Also
+  `shufi doctor`, `shufi update`, `shufi host codex|cursor` and `shufi uninstall-runtime`. No sudo,
+  nothing outside `~/.shufi` and `~/.local/bin`.
+- `docs/onboarding.md`: the steps for an AI agent that is asked to "set up Shufi" from a pasted link.
 
 ### Changed
+
+- Every command Shufi runs or registers goes through `bin/shufi-node`: the five plugin hooks, the
+  Codex and Cursor hooks, `/shufi-setup`, the `setup-for-me`, `memory-setup`, `recall` and
+  `playwright-cli` skills, and the commands in the plan output. It uses `node` on PATH when that is
+  18 or newer, otherwise the private copy. With neither, a hook exits 0 and says `Run: shufi start`
+  (a session never breaks); a command exits 1. `/shufi-setup` now needs `Bash(sh:*)` instead of `Bash(node:*)`.
+- Codex and Cursor: the README no longer clones into `~/.shufi` (that folder now also holds the
+  private Node.js); use `shufi host codex|cursor`, or clone into `~/.shufi/app`. Re-running
+  `install-host` rewrites old `node ...` hook entries in place.
+- `setup/server.mjs` no longer dies on a machine with no `open` or `xdg-open` (a headless Linux
+  box): the failed browser launch was an unhandled error. The printed URL is the fallback.
+- `setup/agent.mjs` waits for stdout to drain before exiting; on Node 18 and 20 a large `--json`
+  print to a pipe was cut off at 64 KB.
 
 - **Renamed from Jarvis OS to Shufi** (a felt owl; the name comes from the Hebrew for owl). The
   plugin is `shufi`, the repository is `ManceRayder42/shufi`, the slash command `/jarvis-setup` is

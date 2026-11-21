@@ -8,7 +8,8 @@ description: Do the Shufi setup for the user instead of sending them to the setu
 Everything on the `/shufi-setup` page has a command. Run them yourself; the
 person should only do what genuinely needs a person.
 
-The tool: `node "${CLAUDE_PLUGIN_ROOT}/setup/agent.mjs" <command>`. It drives
+The tool: `sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/setup/agent.mjs" <command>`
+(`bin/shufi-node` finds Node.js, including the private copy `shufi start` installs). It drives
 the same setup server the page uses, so results are identical. Add `--json`
 to `status`, `plan`, `skills` or `tools` for machine-readable output.
 
@@ -41,7 +42,7 @@ to `status`, `plan`, `skills` or `tools` for machine-readable output.
   never put one in a command line.
 - For a connection that needs a key, give them the plan's `how` line as is:
   they copy the key, then type it in Claude Code —
-  `! node "<plugin root>/setup/agent.mjs" connect <id> --from-clipboard`.
+  `! sh "<plugin root>/bin/shufi-node" "<plugin root>/setup/agent.mjs" connect <id> --from-clipboard`.
   The key is read from the clipboard and never printed. (In a normal
   terminal, without the flag, it asks with typing hidden.)
 - Never run a `--from-clipboard` command yourself, and never read the

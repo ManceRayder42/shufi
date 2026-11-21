@@ -10,7 +10,7 @@ One deterministic script does all the work. Do not recreate its steps by hand.
 1. Run it (add `--dry-run` first if the user asks what it would change; add `--lang he` when the
    user writes Hebrew, otherwise `--lang en`):
 
-   `node "${CLAUDE_PLUGIN_ROOT}/skills/memory-setup/scripts/memory-setup.mjs" --lang <he|en>`
+   `sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/memory-setup/scripts/memory-setup.mjs" --lang <he|en>`
 
 2. Relay the summary table it prints, in the user's language, without rewriting the paths. Say in
    one line what changed: `created`, `updated` or "nothing to do".

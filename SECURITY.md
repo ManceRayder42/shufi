@@ -58,6 +58,29 @@ There is no background process to find, audit, or remember to kill, because
 there is no background process — for the setup server, and for the plugin as
 installed by default. The exceptions are both opt-in and covered below.
 
+One more way to start it: `shufi start --background` (used by an AI agent that must not block on
+the page) runs the same server detached from the terminal, with output in `~/.shufi/setup.log`.
+Nothing else changes: it still exits when the tab is closed or after 10 minutes.
+
+## The launcher (`install.sh`, `bin/shufi`)
+
+`install.sh` copies one script, `bin/shufi`, to `~/.local/bin` and, if that folder is not on your
+`PATH`, appends one `export PATH=...` line to your shell's startup file and tells you which. It
+needs no `sudo` and changes nothing else. `shufi start` then downloads, only when missing:
+
+- **Node.js**, the official release tarball from `nodejs.org/dist`, for the version pinned in
+  `bin/shufi`. It is unpacked only if its SHA-256 matches both that release's `SHASUMS256.txt`
+  and the hash pinned in the script; any mismatch stops with exit 4 and installs nothing. The
+  `SHASUMS256.txt.sig` signature is not checked. It lives in `~/.shufi/runtime` and is used only
+  when no Node.js 18 or newer is on `PATH`.
+- **Claude Code**, by running Anthropic's own installer (`curl -fsSL https://claude.ai/install.sh | bash`).
+- **Shufi itself**, through `claude plugin marketplace add`, from GitHub. When git is missing it
+  downloads the `master` tarball from GitHub into `~/.shufi/app` instead; that one is not hash
+  checked, because `master` moves.
+
+`curl ... | sh` runs whatever the URL serves, as you. Read `install.sh` first if you prefer; it is
+short, and `sh install.sh` from a checkout installs that checkout's `bin/shufi` instead.
+
 ## The Telegram bridge is a real background process — read this before installing it
 
 Unlike the setup server, `bridge/telegram-bridge.sh` and

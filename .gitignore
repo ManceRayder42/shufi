@@ -7,3 +7,9 @@ node_modules/
 .DS_Store
 __pycache__/
 *.pyc
+
+# Created by the shufi launcher when this folder is also used as ~/.shufi
+/runtime/
+/app/
+/setup.log
+/.no-node-nudge
