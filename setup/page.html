@@ -459,7 +459,8 @@ html{background:var(--sky-a)}
 :root[data-theme="light"] :focus-visible{outline-color:#8f4310}
 .btn:focus-visible,.ibtn:focus-visible,.lnk:focus-visible{outline-offset:3px}
 /* the prototype hid the page scroll; the real page scrolls inside the left column on desktop and as a page on a phone */
-#leftcol{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding-inline-end:.2rem}
+#leftcol{overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-inline-end:.2rem}
+#leftcol::-webkit-scrollbar{display:none}
 #shufi{flex:none;min-height:min-content}
 #topic{flex:1 1 auto;min-height:0}
 .iconbtn{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:50%;border:1.5px solid var(--line)}
