@@ -54,7 +54,7 @@ test('codex: fresh install writes instructions, hook, MCP block and skill links'
   const hooks = JSON.parse(read(path.join(home, '.codex', 'hooks.json')));
   const h = hooks.hooks.SessionStart[0].hooks[0];
   assert.equal(h.type, 'command');
-  assert.equal(h.command, `node ${JSON.stringify(path.join(ROOT, 'hooks', 'session-start.mjs'))} --host codex`);
+  assert.equal(h.command, `sh ${JSON.stringify(path.join(ROOT, 'bin', 'shufi-node'))} --hook ${JSON.stringify(path.join(ROOT, 'hooks', 'session-start.mjs'))} --host codex`);
   assert.equal(hooks.hooks.SessionStart[0].matcher, 'startup|resume|clear');
 
   const toml = read(path.join(home, '.codex', 'config.toml'));
@@ -283,7 +283,7 @@ test('cursor: fresh install writes hook, mcp.json and skill copies', () => {
   assert.equal(r.ok, true);
   const hooks = JSON.parse(read(path.join(home, '.cursor', 'hooks.json')));
   assert.equal(hooks.version, 1);
-  assert.equal(hooks.hooks.sessionStart[0].command, `node ${JSON.stringify(path.join(ROOT, 'hooks', 'session-start.mjs'))} --host cursor`);
+  assert.equal(hooks.hooks.sessionStart[0].command, `sh ${JSON.stringify(path.join(ROOT, 'bin', 'shufi-node'))} --hook ${JSON.stringify(path.join(ROOT, 'hooks', 'session-start.mjs'))} --host cursor`);
   const mcp = JSON.parse(read(path.join(home, '.cursor', 'mcp.json')));
   assert.deepEqual(mcp.mcpServers.playwright, { type: 'stdio', command: 'npx', args: ['-y', '@playwright/mcp@latest'] });
   const skill = path.join(home, '.cursor', 'skills', 'done');

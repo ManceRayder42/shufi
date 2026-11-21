@@ -1,0 +1,550 @@
+#!/bin/sh
+# shufi: the Shufi launcher (https://github.com/ManceRayder42/shufi).
+#
+#   shufi start [--background] [--no-open]   install what is missing, open the setup screen
+#   shufi doctor                             check Node.js, Claude Code, the plugin and a hook
+#   shufi update                             update this launcher and the plugin
+#   shufi host <codex|cursor> [args]         wire Codex CLI or Cursor to the memory (--uninstall undoes it)
+#   shufi node                               print the Node.js it would use (installs it if needed)
+#   shufi uninstall-runtime                  delete the private Node.js copy (~/.shufi/runtime)
+#
+# What `start` does, in order, skipping what is already done:
+#   1. Node.js: `node` on PATH if it is 18 or newer, else ~/.shufi/runtime/node-v*/bin/node,
+#      else download the pinned official release from nodejs.org, check its SHA-256 against
+#      the release's SHASUMS256.txt AND the hash pinned below (stop on any mismatch), and
+#      unpack it into ~/.shufi/runtime.
+#   2. Claude Code: if `claude` is missing, run Anthropic's official installer.
+#      If it is not signed in, say so and stop (exit 3): sign in by running `claude` once.
+#   3. The Shufi plugin: add the marketplace and install it, or update it when installed.
+#      Without git on the machine the marketplace is a tarball unpacked into ~/.shufi/app.
+#   4. Run setup/server.mjs of the installed plugin with that Node.js. It opens the browser.
+#
+# Nothing is written outside ~/.shufi and ~/.local/bin (plus what Anthropic's installer does
+# for claude). No sudo, no Homebrew.
+#
+# Exit codes: 0 ok, 1 other failure, 2 usage, 3 Claude Code not signed in,
+#             4 Node.js could not be installed or verified, 5 Claude Code install failed,
+#             6 plugin install or start failed.
+#
+# Environment (all optional; the SHUFI_* ones exist mostly for tests):
+#   SHUFI_HOME               default ~/.shufi
+#   SHUFI_NODE_VERSION       default is the pinned one; another version is checked only
+#                            against its SHASUMS256.txt because there is no pinned hash for it
+#   SHUFI_NODE_DIST_URL      default https://nodejs.org/dist
+#   SHUFI_MARKETPLACE        marketplace source for `claude plugin marketplace add`
+#   SHUFI_SOURCE_URL         tarball used when git is missing (default: master on GitHub)
+#   SHUFI_FORCE_TARBALL=1    use the tarball even when git exists
+#   SHUFI_SKIP_CLAUDE_INSTALL=1, SHUFI_SKIP_LOGIN_CHECK=1, SHUFI_SKIP_UPDATE=1
+#   SHUFI_NO_OPEN=1          do not open the browser (same as --no-open)
+#   SHUFI_RAW_BASE           where `update` fetches this launcher from
+
+PINNED_NODE_VERSION="v26.13.1"
+NODE_VERSION="${SHUFI_NODE_VERSION:-$PINNED_NODE_VERSION}"
+NODE_MIN_MAJOR=18   # setup/*.mjs use global fetch and AbortSignal.timeout (Node 18); nothing newer
+
+SHUFI_HOME="${SHUFI_HOME:-$HOME/.shufi}"
+RUNTIME_DIR="$SHUFI_HOME/runtime"
+APP_DIR="$SHUFI_HOME/app"
+RAW_BASE="${SHUFI_RAW_BASE:-https://raw.githubusercontent.com/ManceRayder42/shufi/master}"
+SOURCE_URL="${SHUFI_SOURCE_URL:-https://codeload.github.com/ManceRayder42/shufi/tar.gz/refs/heads/master}"
+MARKETPLACE_REPO="ManceRayder42/shufi"
+
+# `curl | sh` installs ~/.local/bin, but the current shell has not re-read its rc file yet.
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+
+TAB=$(printf '\t')
+WORK=""
+trap 'if [ -n "$WORK" ]; then rm -rf "$WORK"; fi' EXIT
+
+say() { printf 'shufi: %s\n' "$*" >&2; }
+die() { code=$1; shift; printf 'shufi: %s\n' "$*" >&2; exit "$code"; }
+
+# SHA-256 of the official Node.js release tarballs, copied from
+# https://nodejs.org/dist/v26.13.1/SHASUMS256.txt when this version was pinned.
+pinned_sha() {
+  case $1 in
+    node-v26.13.1-darwin-arm64.tar.gz) echo aec2514ea1ceb2ba52455e9ec65986f6749a06dd759e5db2a72e6889668c9735 ;;
+    node-v26.13.1-darwin-x64.tar.gz)   echo 82bb96078a24ca50b9c9a38f2379e6be6d87171fcd400fc14c8934b3bce96e2f ;;
+    node-v26.13.1-linux-arm64.tar.gz)  echo 80a330b35415382878df18d41afbd106ea89bfb3be0087d6608e289a14c5cc7d ;;
+    node-v26.13.1-linux-x64.tar.gz)    echo 518674de2b621728a5e4486f5fb3b7d2900bb3cc4aa97969edaa463db99f9778 ;;
+    *) echo "" ;;
+  esac
+}
+
+fetch() { # fetch URL DEST [progress]
+  if command -v curl >/dev/null 2>&1; then
+    if [ "${3:-}" = progress ] && [ -t 2 ]; then
+      curl -fL --retry 2 --connect-timeout 20 --progress-bar -o "$2" "$1"
+    else
+      curl -fsSL --retry 2 --connect-timeout 20 -o "$2" "$1"
+    fi
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "$2" "$1"
+  else
+    say "need curl or wget to download files"
+    return 1
+  fi
+}
+
+sha256_of() {
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  elif command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  elif command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$1" | awk '{print $NF}'
+  else
+    return 1
+  fi
+}
+
+# ---------------------------------------------------------------- Node.js
+
+# Keep good_node / resolve_node in step with bin/shufi-node.
+good_node() {
+  v=$("$1" -v 2>/dev/null) || return 1
+  v=${v#v}
+  v=${v%%.*}
+  case $v in '' | *[!0-9]*) return 1 ;; esac
+  [ "$v" -ge "$NODE_MIN_MAJOR" ]
+}
+
+resolve_node() {
+  NODE=""
+  NODE_SRC=""
+  p=$(command -v node 2>/dev/null)
+  if [ -n "$p" ] && good_node "$p"; then
+    NODE=$p
+    NODE_SRC=path
+    return 0
+  fi
+  for p in "$RUNTIME_DIR"/node-v*/bin/node; do
+    if [ -x "$p" ] && good_node "$p"; then
+      NODE=$p
+      NODE_SRC=runtime
+      return 0
+    fi
+  done
+  return 1
+}
+
+detect_platform() {
+  case $(uname -s) in
+    Darwin) P_OS=darwin ;;
+    Linux) P_OS=linux ;;
+    *) die 4 "unsupported system $(uname -s): Shufi's launcher supports macOS and Linux. On Windows use WSL, or install Node.js from nodejs.org and the plugin by hand (see the README)." ;;
+  esac
+  case $(uname -m) in
+    arm64 | aarch64) P_ARCH=arm64 ;;
+    x86_64 | amd64) P_ARCH=x64 ;;
+    *) die 4 "unsupported CPU $(uname -m): need arm64 or x64" ;;
+  esac
+  # A terminal running under Rosetta reports x86_64 on an Apple Silicon Mac; use the native build.
+  if [ "$P_OS" = darwin ] && [ "$P_ARCH" = x64 ] && [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = 1 ]; then
+    P_ARCH=arm64
+  fi
+  if [ "$P_OS" = linux ] && (ldd --version 2>&1 | grep -qi musl); then
+    die 4 "this Linux uses musl (for example Alpine); nodejs.org has no official build for it. Install Node.js $NODE_MIN_MAJOR or newer with your package manager, then run shufi start again."
+  fi
+}
+
+install_runtime() {
+  detect_platform
+  base="node-$NODE_VERSION-$P_OS-$P_ARCH"
+  file="$base.tar.gz"
+  dist="${SHUFI_NODE_DIST_URL:-https://nodejs.org/dist}"
+  dist="${dist%/}"
+  mkdir -p "$SHUFI_HOME" || die 4 "cannot create $SHUFI_HOME"
+  WORK="$SHUFI_HOME/tmp.$$"
+  rm -rf "$WORK"
+  mkdir -p "$WORK/x" || die 4 "cannot create $WORK"
+
+  say "Node.js $NODE_MIN_MAJOR or newer not found. Downloading the official Node.js $NODE_VERSION ($P_OS-$P_ARCH) from nodejs.org into $RUNTIME_DIR (no sudo, nothing outside ~/.shufi)."
+  fetch "$dist/$NODE_VERSION/$file" "$WORK/$file" progress || die 4 "download failed: $dist/$NODE_VERSION/$file"
+  fetch "$dist/$NODE_VERSION/SHASUMS256.txt" "$WORK/SHASUMS256.txt" || die 4 "download failed: $dist/$NODE_VERSION/SHASUMS256.txt"
+
+  want=$(awk -v f="$file" '$2 == f { print $1 }' "$WORK/SHASUMS256.txt")
+  [ -n "$want" ] || die 4 "SHASUMS256.txt has no entry for $file; refusing to install."
+  got=$(sha256_of "$WORK/$file") || die 4 "no SHA-256 tool found (need shasum, sha256sum or openssl); refusing to install an unchecked download."
+  if [ "$got" != "$want" ]; then
+    die 4 "CHECKSUM MISMATCH for $file: the download is $got, SHASUMS256.txt says $want. Nothing was installed."
+  fi
+  pin=$(pinned_sha "$file")
+  if [ -n "$pin" ] && [ "$got" != "$pin" ]; then
+    die 4 "CHECKSUM MISMATCH for $file: the download is $got, the hash pinned in this launcher is $pin. Nothing was installed."
+  fi
+  if [ -n "$pin" ]; then
+    say "checksum verified (SHASUMS256.txt and the pinned hash agree): sha256 $got"
+  else
+    say "checksum verified against SHASUMS256.txt (no pinned hash for $NODE_VERSION): sha256 $got"
+  fi
+
+  tar -xzf "$WORK/$file" -C "$WORK/x" || die 4 "could not unpack $file"
+  [ -x "$WORK/x/$base/bin/node" ] || die 4 "$file does not contain $base/bin/node"
+  [ "$("$WORK/x/$base/bin/node" -v 2>/dev/null)" = "$NODE_VERSION" ] || die 4 "the unpacked node does not report version $NODE_VERSION"
+
+  mkdir -p "$RUNTIME_DIR" || die 4 "cannot create $RUNTIME_DIR"
+  rm -rf "$RUNTIME_DIR"/node-v*
+  mv "$WORK/x/$base" "$RUNTIME_DIR/node-$NODE_VERSION" || die 4 "cannot move Node.js into $RUNTIME_DIR"
+  rm -rf "$WORK"
+  WORK=""
+  say "Node.js $NODE_VERSION is ready in $RUNTIME_DIR/node-$NODE_VERSION"
+}
+
+ensure_node() {
+  if resolve_node; then
+    return 0
+  fi
+  install_runtime
+  resolve_node || die 4 "Node.js was installed but is not usable."
+}
+
+# ---------------------------------------------------------------- Claude Code
+
+find_claude() {
+  CLAUDE=$(command -v claude 2>/dev/null)
+  if [ -n "$CLAUDE" ]; then
+    return 0
+  fi
+  if [ -x "$HOME/.local/bin/claude" ]; then
+    CLAUDE="$HOME/.local/bin/claude"
+    return 0
+  fi
+  return 1
+}
+
+ensure_claude() {
+  if find_claude; then
+    return 0
+  fi
+  if [ "${SHUFI_SKIP_CLAUDE_INSTALL:-}" = 1 ]; then
+    die 5 "Claude Code is not installed and SHUFI_SKIP_CLAUDE_INSTALL=1 is set."
+  fi
+  say "Claude Code is not installed. Running Anthropic's official installer: curl -fsSL https://claude.ai/install.sh | bash"
+  command -v bash >/dev/null 2>&1 || die 5 "bash is needed to run Anthropic's installer."
+  curl -fsSL https://claude.ai/install.sh | bash || die 5 "Anthropic's installer failed. See https://claude.com/claude-code for manual steps."
+  find_claude || die 5 "the installer finished but claude is not on PATH or in ~/.local/bin."
+}
+
+check_login() {
+  if [ "${SHUFI_SKIP_LOGIN_CHECK:-}" = 1 ]; then
+    return 0
+  fi
+  out=$("$CLAUDE" auth status 2>&1)
+  case $out in
+    *'"loggedIn": false'* | *'"loggedIn":false'*)
+      say "Claude Code is installed but you are not signed in."
+      say "Run: claude    (sign in when it asks), then close it and run: shufi start"
+      exit 3
+      ;;
+  esac
+  return 0
+}
+
+# ---------------------------------------------------------------- the plugin
+
+have_git() {
+  g=$(command -v git 2>/dev/null)
+  [ -n "$g" ] || return 1
+  # On a Mac without the developer tools /usr/bin/git is a stub that opens an installer dialog.
+  if [ "$(uname -s)" = Darwin ] && [ "$g" = /usr/bin/git ]; then
+    xcode-select -p >/dev/null 2>&1 || return 1
+  fi
+  return 0
+}
+
+# Unpack the Shufi repository (no git needed) into ~/.shufi/app and keep it as a local marketplace.
+fetch_app() {
+  mkdir -p "$SHUFI_HOME" || return 1
+  WORK="$SHUFI_HOME/tmp.app.$$"
+  rm -rf "$WORK"
+  mkdir -p "$WORK/x" || return 1
+  say "Downloading Shufi into $APP_DIR"
+  fetch "$SOURCE_URL" "$WORK/app.tgz" || { say "download failed: $SOURCE_URL"; return 1; }
+  tar -xzf "$WORK/app.tgz" -C "$WORK/x" || { say "could not unpack the Shufi download"; return 1; }
+  top=$(ls "$WORK/x" | head -n 1)
+  [ -f "$WORK/x/$top/.claude-plugin/marketplace.json" ] || { say "the Shufi download has no .claude-plugin/marketplace.json"; return 1; }
+  rm -rf "$APP_DIR.old"
+  if [ -e "$APP_DIR" ]; then mv "$APP_DIR" "$APP_DIR.old" || return 1; fi
+  mv "$WORK/x/$top" "$APP_DIR" || return 1
+  rm -rf "$APP_DIR.old" "$WORK"
+  WORK=""
+  return 0
+}
+
+# Prints "found<TAB><root>" when shufi@shufi is installed (root empty if its files are missing).
+plugin_info() {
+  "$CLAUDE" plugin list --json 2>/dev/null | "$NODE" -e '
+let s = "";
+process.stdin.on("data", (d) => { s += d; }).on("end", () => {
+  let a = [];
+  try { a = JSON.parse(s); } catch (e) { /* not json: treat as not installed */ }
+  const fs = require("fs"), path = require("path");
+  const p = (Array.isArray(a) ? a : []).find((x) => x && x.id === "shufi@shufi");
+  if (!p) process.exit(0);
+  // A plugin from a local-folder marketplace is loaded from that folder ("readFromFolder"), not from
+  // the cache copy that installPath names; use the one Claude Code actually loads.
+  const root = [p.readFromFolder, p.installPath].filter(Boolean)
+    .find((d) => fs.existsSync(path.join(d, "setup", "server.mjs"))) || "";
+  console.log("found\t" + root);
+});'
+}
+
+# Prints the path of the "shufi" marketplace when it is a local directory, else nothing.
+marketplace_dir() {
+  "$CLAUDE" plugin marketplace list --json 2>/dev/null | "$NODE" -e '
+let s = "";
+process.stdin.on("data", (d) => { s += d; }).on("end", () => {
+  let a = [];
+  try { a = JSON.parse(s); } catch (e) { /* ignore */ }
+  const m = (Array.isArray(a) ? a : []).find((x) => x && x.name === "shufi" && x.source === "directory");
+  if (m) console.log(m.path || m.installLocation || "");
+});'
+}
+
+install_plugin() {
+  src="${SHUFI_MARKETPLACE:-}"
+  if [ -z "$src" ]; then
+    if [ "${SHUFI_FORCE_TARBALL:-}" != 1 ] && have_git; then
+      src="$MARKETPLACE_REPO"
+    else
+      say "git is not available; installing Shufi from a downloaded copy instead."
+      fetch_app || return 1
+      src="$APP_DIR"
+    fi
+  fi
+  say "Adding the Shufi marketplace: $src"
+  if ! "$CLAUDE" plugin marketplace add "$src"; then
+    if [ "$src" = "$MARKETPLACE_REPO" ]; then
+      say "Could not add it from GitHub; trying a downloaded copy."
+      fetch_app || return 1
+      "$CLAUDE" plugin marketplace add "$APP_DIR" || return 1
+    else
+      return 1
+    fi
+  fi
+  say "Installing the Shufi plugin"
+  "$CLAUDE" plugin install shufi@shufi || return 1
+}
+
+update_plugin() {
+  mdir=$(marketplace_dir)
+  if [ -n "$mdir" ] && [ "$mdir" = "$APP_DIR" ]; then
+    fetch_app || say "could not refresh the downloaded copy; keeping the one you have."
+  fi
+  "$CLAUDE" plugin marketplace update shufi >/dev/null 2>&1
+  "$CLAUDE" plugin update shufi@shufi >/dev/null 2>&1
+  return 0
+}
+
+ensure_plugin() {
+  info=$(plugin_info)
+  if [ -n "$info" ]; then
+    if [ "${SHUFI_SKIP_UPDATE:-}" != 1 ]; then
+      say "Shufi plugin is installed; checking for updates."
+      update_plugin
+      info=$(plugin_info)
+    fi
+  else
+    install_plugin || die 6 "could not install the Shufi plugin (see the error above)."
+    info=$(plugin_info)
+  fi
+  PLUGIN_ROOT=${info#found"$TAB"}
+  [ -n "$info" ] && [ -f "$PLUGIN_ROOT/setup/server.mjs" ] || die 6 "the Shufi plugin is installed but its files were not found (claude plugin list --json)."
+}
+
+# ---------------------------------------------------------------- commands
+
+cmd_start() {
+  background=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --background) background=1 ;;
+      --no-open) SHUFI_NO_OPEN=1 ;;
+      *) die 2 "unknown option for start: $1" ;;
+    esac
+    shift
+  done
+  ensure_node
+  # The server and the installers below see the private Node.js (and its npm) first.
+  if [ "$NODE_SRC" = runtime ]; then
+    PATH="$(dirname "$NODE"):$PATH"
+    export PATH
+  fi
+  ensure_claude
+  check_login
+  ensure_plugin
+  if [ "${SHUFI_NO_OPEN:-}" = 1 ]; then
+    JARVIS_NO_OPEN=1
+    export JARVIS_NO_OPEN
+  fi
+  say "Starting the setup screen (Node.js $("$NODE" -v), $NODE_SRC)."
+  if [ "$background" = 1 ]; then
+    mkdir -p "$SHUFI_HOME"
+    log="$SHUFI_HOME/setup.log"
+    : >"$log"
+    nohup "$NODE" "$PLUGIN_ROOT/setup/server.mjs" >"$log" 2>&1 </dev/null &
+    pid=$!
+    i=0
+    url=""
+    while [ "$i" -lt 20 ]; do
+      url=$(grep -o 'http://127.0.0.1:[0-9]*/?t=[A-Za-z0-9]*' "$log" 2>/dev/null | head -n 1)
+      [ -n "$url" ] && break
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 1
+      i=$((i + 1))
+    done
+    [ -n "$url" ] || die 6 "the setup server did not start; see $log"
+    printf 'Setup screen: %s\n' "$url"
+    printf 'Server pid: %s (it closes itself when the tab is closed; log: %s)\n' "$pid" "$log"
+    printf 'Plugin root: %s\n' "$PLUGIN_ROOT"
+    return 0
+  fi
+  exec "$NODE" "$PLUGIN_ROOT/setup/server.mjs"
+}
+
+cmd_node() {
+  ensure_node
+  printf '%s\n' "$NODE"
+}
+
+cmd_host() {
+  host=${1:-}
+  case $host in
+    codex | cursor) shift ;;
+    *) die 2 "usage: shufi host <codex|cursor> [install-host options]" ;;
+  esac
+  ensure_node
+  if [ ! -f "$APP_DIR/setup/agent.mjs" ]; then
+    fetch_app || die 6 "could not download Shufi into $APP_DIR"
+  fi
+  if [ "${1:-}" = --uninstall ]; then
+    shift
+    "$NODE" "$APP_DIR/setup/agent.mjs" uninstall-host "$host" "$@"
+    exit $?
+  fi
+  "$NODE" "$APP_DIR/setup/agent.mjs" setup --host "$host" || exit $?
+  "$NODE" "$APP_DIR/setup/agent.mjs" install-host "$host" "$@"
+}
+
+cmd_update() {
+  mkdir -p "$SHUFI_HOME"
+  me=$0
+  tmp="$SHUFI_HOME/launcher.$$"
+  if fetch "$RAW_BASE/bin/shufi" "$tmp" && sh -n "$tmp" 2>/dev/null && grep -q '^# shufi: the Shufi launcher' "$tmp"; then
+    case $me in
+      */*) ;;
+      *) me=$(command -v shufi 2>/dev/null) ;;
+    esac
+    if [ -n "$me" ] && [ -w "$me" ]; then
+      chmod 755 "$tmp"
+      mv "$tmp" "$me" && say "launcher updated ($me)"
+    else
+      rm -f "$tmp"
+      say "launcher not replaced (cannot find or write it)."
+    fi
+  else
+    rm -f "$tmp"
+    say "could not fetch a new launcher; keeping this one."
+  fi
+  ensure_node
+  find_claude || die 5 "Claude Code is not installed; run: shufi start"
+  info=$(plugin_info)
+  if [ -z "$info" ]; then
+    say "the plugin is not installed; run: shufi start"
+    return 0
+  fi
+  update_plugin
+  say "plugin checked. Restart Claude Code to load any update."
+}
+
+cmd_uninstall_runtime() {
+  if [ -d "$RUNTIME_DIR" ]; then
+    rm -rf "$RUNTIME_DIR"
+    say "removed $RUNTIME_DIR"
+  else
+    say "no private Node.js at $RUNTIME_DIR"
+  fi
+}
+
+cmd_doctor() {
+  bad=0
+  row() { printf '  %-9s %s\n' "$1" "$2"; }
+  echo "shufi doctor"
+  row launcher "$0"
+  if resolve_node; then
+    row node "$("$NODE" -v) ($NODE_SRC: $NODE)"
+  else
+    row node "MISSING (need $NODE_MIN_MAJOR or newer). Fix: shufi start"
+    bad=1
+  fi
+  if find_claude; then
+    row claude "$("$CLAUDE" --version 2>/dev/null | head -n 1) ($CLAUDE)"
+    out=$("$CLAUDE" auth status 2>&1)
+    case $out in
+      *'"loggedIn": false'* | *'"loggedIn":false'*) row login "NOT signed in. Fix: run claude once and sign in"; bad=1 ;;
+      *'"loggedIn": true'* | *'"loggedIn":true'*) row login "signed in" ;;
+      *) row login "unknown" ;;
+    esac
+    if [ -n "$NODE" ]; then
+      info=$(plugin_info)
+      if [ -n "$info" ]; then
+        PLUGIN_ROOT=${info#found"$TAB"}
+        if [ -f "$PLUGIN_ROOT/bin/shufi-node" ]; then
+          row plugin "shufi@shufi at $PLUGIN_ROOT"
+          hook_out=$(printf '{}' | sh "$PLUGIN_ROOT/bin/shufi-node" --hook "$PLUGIN_ROOT/hooks/session-start.mjs" 2>&1)
+          hook_rc=$?
+          if [ "$hook_rc" = 0 ]; then
+            row hook "ok: session-start through the shim, exit 0"
+          else
+            row hook "FAILED (exit $hook_rc): $hook_out"
+            bad=1
+          fi
+        else
+          row plugin "shufi@shufi at $PLUGIN_ROOT, but it has no bin/shufi-node (an older release). Fix: shufi update; if that is not enough: claude plugin uninstall shufi, then shufi start"
+          bad=1
+        fi
+      else
+        row plugin "not installed. Fix: shufi start"
+        bad=1
+      fi
+    fi
+  else
+    row claude "MISSING. Fix: shufi start"
+    bad=1
+  fi
+  if [ "$bad" = 0 ]; then echo "all good"; else echo "something needs fixing (see above)"; fi
+  return "$bad"
+}
+
+usage() {
+  cat >&2 <<'EOF'
+usage: shufi <command>
+  start [--background] [--no-open]   install what is missing and open the setup screen
+  doctor                             check Node.js, Claude Code, the plugin and a hook
+  update                             update this launcher and the plugin
+  host <codex|cursor> [options]      wire Codex CLI or Cursor to the Shufi memory
+  host <codex|cursor> --uninstall    undo that
+  node                               print the Node.js this launcher uses
+  uninstall-runtime                  delete the private Node.js copy in ~/.shufi/runtime
+EOF
+}
+
+main() {
+  cmd=${1:-help}
+  [ $# -gt 0 ] && shift
+  case $cmd in
+    start) cmd_start "$@" ;;
+    doctor) cmd_doctor ;;
+    update) cmd_update ;;
+    host) cmd_host "$@" ;;
+    node) cmd_node ;;
+    uninstall-runtime) cmd_uninstall_runtime ;;
+    help | -h | --help) usage ;;
+    version | --version | -v) echo "shufi launcher (node $PINNED_NODE_VERSION pinned, minimum $NODE_MIN_MAJOR)" ;;
+    *) usage; exit 2 ;;
+  esac
+}
+
+main "$@"

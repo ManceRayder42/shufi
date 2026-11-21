@@ -44,7 +44,8 @@ if (HOST && !/^(codex|cursor)$/.test(HOST)) { console.error('--host takes codex 
 const rest = argv.slice(1).filter((a, i, all) => a !== '--json' && a !== '--from-clipboard' && a !== '--host' && all[i - 1] !== '--host');
 // Plan lines print an absolute command, so an agent (or a person) can run them
 // from any directory without knowing where the plugin is installed.
-const SELF = 'node "' + path.join(__dirname, 'agent.mjs') + '"';
+// They go through bin/shufi-node so they also work where Node.js is only the private copy `shufi start` installed.
+const SELF = 'sh "' + path.join(__dirname, '..', 'bin', 'shufi-node') + '" "' + path.join(__dirname, 'agent.mjs') + '"';
 
 const USAGE = `usage: node setup/agent.mjs <command>
   status | plan | skills | tools          read the checklist (add --json for machine output)
@@ -340,6 +341,9 @@ function usage(msg) { const e = new Error(msg + '\n\n' + USAGE); e.usage = true;
 
 // ---- run ------------------------------------------------------------------
 if (!COMMANDS[cmd]) { console.error('unknown command: ' + cmd + '\n\n' + USAGE); process.exit(2); }
+// A pipe is written asynchronously on Node 18 and 20, so exiting straight after a large `--json` print
+// cut it off at 64 KB. Wait for stdout to drain first (harmless on newer Node).
+const exitAfterFlush = (c) => process.stdout.write('', () => process.exit(c));
 let code = 0;
 try {
   srv = await startServer();
@@ -353,4 +357,4 @@ try {
   clearInterval(beat);
   if (srv) srv.child.kill('SIGTERM');
 }
-process.exit(code);
+exitAfterFlush(code);

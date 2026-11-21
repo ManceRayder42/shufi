@@ -38,7 +38,7 @@ second copy.
 ## Run it
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/playwright-cli/scripts/scan.mjs" <base-url> [options]
+sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/playwright-cli/scripts/scan.mjs" <base-url> [options]
 ```
 
 The target must already be reachable — start the dev server first (`npm run
@@ -60,7 +60,7 @@ nav, or broken link), `2` usage/runtime error.
 ### Example
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/playwright-cli/scripts/scan.mjs" http://localhost:5173 \
+sh "${CLAUDE_PLUGIN_ROOT}/bin/shufi-node" "${CLAUDE_PLUGIN_ROOT}/skills/playwright-cli/scripts/scan.mjs" http://localhost:5173 \
   --routes /,/about,/contact
 ```
 

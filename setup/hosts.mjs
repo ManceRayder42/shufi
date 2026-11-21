@@ -33,6 +33,9 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_PLUGIN_ROOT = path.resolve(HERE, '..');
+
+// `sh "<root>/bin/shufi-node"`: the prefix that replaces a bare `node` in every command we hand out.
+export function nodeShim(root) { return 'sh ' + JSON.stringify(path.join(root, 'bin', 'shufi-node')); }
 export const HOSTS = ['codex', 'cursor'];
 
 // Markers written by this version.
@@ -198,7 +201,7 @@ function instructionText(host, root) {
     '',
     '- Find the hub: the `JARVIS_HUB` environment variable if set, otherwise the path written in `~/.jarvis-hub-path`.',
     '- At the start of a session, unless a memory section ("# Shufi memory", or "# Jarvis memory" from older releases) was already injected into your context, read `<hub>/MEMORY.md` and, if it exists, `<hub>/working-rules.md`. Read other hub files only when a task needs them.',
-    '- If there is no hub or no `MEMORY.md`, the memory is not set up. Say so once and offer to set it up: `node "' + path.join(root, 'setup', 'agent.mjs') + '" plan`.',
+    '- If there is no hub or no `MEMORY.md`, the memory is not set up. Say so once and offer to set it up: `' + nodeShim(root) + ' "' + path.join(root, 'setup', 'agent.mjs') + '" plan`.',
     '- The Shufi skills are installed for you. Their instructions say `${CLAUDE_PLUGIN_ROOT}`; on this host that means `' + root + '`.',
     '- When the user says "done" or ends a work session, use the ' + skill + ' skill so the session is written into the hub.',
   ].join('\n');
@@ -449,8 +452,15 @@ function codexInstructionFile(ctx) {
   return { target: useOverride ? override : path.join(dir, 'AGENTS.md'), both: [override, path.join(dir, 'AGENTS.md')] };
 }
 
+// Every command Shufi registers in a host runs through bin/shufi-node, so it works on a computer
+// without Node.js installed (it falls back to the private copy `shufi start` downloads) and a hook
+// never breaks a session when neither exists. `--hook` is what makes the shim exit 0 in that case.
+function hookCommand(root, host) {
+  return nodeShim(root) + ' --hook ' + JSON.stringify(path.join(root, 'hooks', 'session-start.mjs')) + ' --host ' + host;
+}
+
 function codexHookCommand(ctx) {
-  return 'node ' + JSON.stringify(path.join(ctx.root, 'hooks', 'session-start.mjs')) + ' --host codex';
+  return hookCommand(ctx.root, 'codex');
 }
 
 const CODEX_HOOK_RE = /session-start\.mjs"?\s+--host codex\b/;
@@ -613,7 +623,7 @@ function installCursor(ctx) {
       const data = j.data;
       if (data.version === undefined) data.version = 1;
       data.hooks = data.hooks && typeof data.hooks === 'object' ? data.hooks : {};
-      const entry = { command: 'node ' + JSON.stringify(path.join(ctx.root, 'hooks', 'session-start.mjs')) + ' --host cursor', timeout: 10 };
+      const entry = { command: hookCommand(ctx.root, 'cursor'), timeout: 10 };
       data.hooks.sessionStart = upsertEntry(Array.isArray(data.hooks.sessionStart) ? data.hooks.sessionStart : [], (h) => h && typeof h.command === 'string' && CURSOR_HOOK_RE.test(h.command), entry);
       commitFile(ctx, 'hook', file, jsonOut(data), 'sessionStart; Cursor runs it fire-and-forget, so also add the User Rule (install-host cursor --print-user-rule)');
     }
@@ -771,7 +781,7 @@ export const GAPS = {
     'Codex detects new skills automatically; restart Codex only if they do not appear. Optional skills you enable later need install-host to be run again.',
   ],
   cursor: [
-    'Cursor has no global rules file that install-host can write: ~/.cursor/rules is only partly supported (needs --- frontmatter, loads only for workspaces under your home folder), so it is not written. Add the User Rule once by hand (Customize > Rules; older builds: Cursor Settings > Rules > User Rules): node setup/agent.mjs install-host cursor --print-user-rule',
+    'Cursor has no global rules file that install-host can write: ~/.cursor/rules is only partly supported (needs --- frontmatter, loads only for workspaces under your home folder), so it is not written. Add the User Rule once by hand (Customize > Rules; older builds: Cursor Settings > Rules > User Rules): shufi host cursor --print-user-rule',
     'Cursor CLI: the documented rule sources are .cursor/rules in the project (install-host cursor --project <dir>) or an AGENTS.md / CLAUDE.md at the project root. Whether the User Rule applies in the CLI is not documented.',
     'The sessionStart hook is fire-and-forget. The Agents Window drops its additional_context (a known Cursor issue, forum thread 174143, 2026-10-09); the editor agent panel works. One user reports CLI 2026.11.05 not loading ~/.cursor/hooks.json (forum thread 177989), unconfirmed. Treat the User Rule (or --project rule) as the reliable path.',
     'Skills are copied, not linked (older Cursor builds did not follow symlinked skills; fixed in 2.5, copies stay safe). Run install-host again after a plugin update or after enabling a skill. If you turn on "Sync Skills for Cloud Agents", Cursor moves ~/.cursor/skills contents to synced storage and a later install-host run may conflict.',

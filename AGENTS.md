@@ -14,6 +14,10 @@ node setup/agent.mjs host-status codex|cursor    # what is wired
 node setup/agent.mjs uninstall-host codex|cursor # undo it
 ```
 
+No Node.js on the machine? Write `sh bin/shufi-node setup/agent.mjs ...` instead of
+`node setup/agent.mjs ...`: it uses `node` from PATH when that is 18 or newer, else the private
+copy that `shufi start` installs in `~/.shufi/runtime`.
+
 Paths are relative to the plugin root (`$CLAUDE_PLUGIN_ROOT` inside Claude
 Code; in Codex and Cursor `$CLAUDE_PLUGIN_ROOT` is not set, the plugin root is
 the folder that holds this file). Exit code 0 = done, 1 = something failed (the output says what),

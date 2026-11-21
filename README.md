@@ -22,25 +22,43 @@
 
 ## Quick start
 
-No account, no API key, nothing to pay for. You need [Claude Code](https://claude.com/claude-code)
-and [Node.js](https://nodejs.org) (the LTS version) on the computer; Shufi's hooks and setup run on Node.
+No account, no API key, nothing to pay for, and no Node.js to install: Shufi brings its own
+when the computer has none.
 
-**1. Install it.** In Claude Code, run:
+**The easy way: let Claude do it.** Paste this into any Claude Code session:
+
+```
+Set up Shufi for me: follow https://github.com/ManceRayder42/shufi/blob/master/docs/onboarding.md step by step.
+```
+
+**Or paste one line in a terminal** (macOS or Linux):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ManceRayder42/shufi/master/install.sh | sh
+```
+
+It puts a small `shufi` launcher in `~/.local/bin`, then runs `shufi start`, which installs
+whatever is missing and opens the setup screen in your browser: Node.js (a private copy in
+`~/.shufi`, checked against its published checksum, only if you have none), Claude Code (Anthropic's own
+installer, only if missing) and the Shufi plugin. No sudo, no Homebrew. If Claude Code asks you
+to sign in, run `claude` once, sign in, and run `shufi start` again. Run `shufi start` any time
+to reopen the setup screen; `shufi doctor` checks that everything is in place.
+
+When the page is done, restart Claude Code. Rather skip the page? Restart Claude Code and say
+"set me up": Claude creates your memory folder, turns on the default skills and connects the free
+tools. It asks once before installing any software, and leaves you only what needs a person: a key
+or a sign-in.
+
+**Already have Claude Code and Node.js, and prefer to install the plugin yourself?** Run:
 
 ```bash
 claude plugin marketplace add ManceRayder42/shufi
 claude plugin install shufi
 ```
 
-One step on Claude Code 2.1.275 or later: `/plugin install shufi --marketplace ManceRayder42/shufi`
-
-**2. Restart Claude Code and say "set me up".** Claude creates your memory
-folder, turns on the default skills and connects the free tools. It asks once
-before installing any software, and leaves you only what needs a person: a key
-or a sign-in.
-
-**Rather click through it?** Type `/shufi-setup` for a local checklist page
-that does the same thing.
+One step on Claude Code 2.1.275 or later: `/plugin install shufi --marketplace ManceRayder42/shufi`.
+Restart Claude Code and say "set me up", or type `/shufi-setup` for the checklist page. (Without
+Node.js the hooks do nothing and tell you to run `shufi start`; they never break a session.)
 
 <p align="center">
   <img src="assets/setup.png" alt="The /shufi-setup page: Shufi the owl on the left, the skills tree with a branch per topic on the right" width="760">
@@ -54,12 +72,13 @@ the gaps listed in [details](docs/details.md#codex-and-cursor).
 
 | | Install |
 |---|---|
-| **Claude Code** | the two lines above |
-| **Codex CLI** | `git clone https://github.com/ManceRayder42/shufi ~/.shufi && node ~/.shufi/setup/agent.mjs setup --host codex && node ~/.shufi/setup/agent.mjs install-host codex`, then run `/hooks` once inside Codex and trust the hook |
-| **Cursor** | the same with `cursor`, then `node ~/.shufi/setup/agent.mjs install-host cursor --print-user-rule` and paste the output into Customize > Rules (older builds: Cursor Settings > Rules > User Rules) |
+| **Claude Code** | the prompt or the one line above |
+| **Codex CLI** | `shufi host codex`, then run `/hooks` once inside Codex and trust the hook |
+| **Cursor** | `shufi host cursor`, then `shufi host cursor --print-user-rule` and paste the output into Customize > Rules (older builds: Cursor Settings > Rules > User Rules) |
 
-It backs up any file it edits and never overwrites yours. Undo:
-`node ~/.shufi/setup/agent.mjs uninstall-host codex` (or `cursor`).
+`shufi` comes from the one-line install above. `shufi host` keeps its copy of Shufi in
+`~/.shufi/app`, so it needs neither git nor Node.js. It backs up any file it edits and never
+overwrites yours. Undo: `shufi host codex --uninstall` (or `cursor`).
 
 ## What you actually get
 

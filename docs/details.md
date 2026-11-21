@@ -203,11 +203,18 @@ before changing it (`<file>.shufi-backup-<timestamp>`), never overwrites
 anything that is yours, and `uninstall-host` removes exactly what it added.
 `--dry-run` shows what it would do. It needs no server and no new dependency.
 
-Clone the repo to a stable place first (`git clone https://github.com/ManceRayder42/shufi ~/.shufi`),
-because the hook and the instructions contain that path. Moved it, or updated
-the clone? Run `install-host` again; it rewrites the paths. (A Claude Code
-plugin cache folder changes with each version, so do not point Codex or Cursor
-at it.)
+The easy way is the launcher: `shufi host codex` (or `cursor`; add `--uninstall` to undo).
+It needs no Node.js and no git: it unpacks Shufi into `~/.shufi/app` and runs the commands
+below from there. By hand, put the repo in a stable place first
+(`git clone https://github.com/ManceRayder42/shufi ~/.shufi/app`; not `~/.shufi` itself, which
+also holds the private Node.js copy), because the hook and the instructions contain that path.
+Moved it, or updated the clone? Run `install-host` again; it rewrites the paths. (A Claude Code
+plugin cache folder changes with each version, so do not point Codex or Cursor at it.)
+
+Every command Shufi registers in a host goes through `bin/shufi-node`, which uses the
+`node` on PATH when it is 18 or newer and otherwise the private copy in `~/.shufi/runtime`.
+The commands below say `node` for brevity; on a computer without Node.js write
+`sh bin/shufi-node` instead of `node`.
 
 ```bash
 node setup/agent.mjs setup --host codex          # create the memory folder (Claude Code is not required)
