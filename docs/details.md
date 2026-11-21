@@ -362,8 +362,8 @@ Left out for license reasons, not quality ones:
   an independent implementation of the same publicly described method, with
   none of that skill's text.
 - **`nano-banana`** — image generation and editing, with a free tier. Licensed
-  **AGPL-3.0**; bundling it would pull this entire plugin under that
-  copyleft license.
+  **MIT** again since 2026-09-30 (upstream LICENSE), after a short AGPL-3.0
+  period; it stays a separate install, listed in the skills catalog.
 
 ## Animation bundle and Modern Web Guidance (recommended installs)
 

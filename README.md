@@ -22,7 +22,8 @@
 
 ## Quick start
 
-No account, no API key, nothing to pay for.
+No account, no API key, nothing to pay for. You need [Claude Code](https://claude.com/claude-code)
+and [Node.js](https://nodejs.org) (the LTS version) on the computer; Shufi's hooks and setup run on Node.
 
 **1. Install it.** In Claude Code, run:
 
