@@ -200,3 +200,29 @@ test('hebrew: every string in the en table has a Hebrew twin, and no step-form s
   assert.match(forms, /el\('bdi', \{ dir: 'ltr'/);
   assert.match(forms, /el\('div', \{ className: 'cmd', dir: 'ltr' \}/);
 });
+
+test('phone: the tree card and the stepper both open the phone step, and it opens on a Telegram / WhatsApp choice', () => {
+  assert.match(page, /<button type="button" class="card felt stitched ghost" id="phone">/, 'the phone card is a real button');
+  assert.match(page, /\$\('#phone'\)\.addEventListener\('click', \(\) => go\('phone', \{ focus: true \}\)\)/, 'clicking the card opens the phone step');
+  assert.match(page, /b\.addEventListener\('click', \(\) => \{ b\.blur\(\); go\(id, \{ focus: true \}\); \}\)/, 'every stepper knot (phone included) opens its step');
+  assert.match(page, /#phone:not\(\.show\)\{[^}]*visibility:hidden/, 'a hidden card is not reachable by keyboard');
+  assert.match(page, /#phone:focus-visible/, 'the card has a visible focus ring');
+  assert.match(page, /if \(id === 'phone' && state\.current !== 'phone'\) state\.phoneChoice = null/, 'entering the step opens on the choice');
+  assert.match(page, /phoneOption\('telegram'[\s\S]{0,80}\n\s*phoneOption\('whatsapp'/, 'both options are offered');
+});
+
+test('phone: WhatsApp is an honest coming-soon panel (no connect flow, no data collected); Telegram keeps its flow', () => {
+  const src = page.slice(page.indexOf('const I18N = {'), page.indexOf('\nfunction tr('));
+  const I18N = new Function(src.replace(/^const I18N = /, 'return ').replace(/;\s*$/, ''))();
+  for (const l of ['en', 'he']) for (const k of ['f_pChoose', 'f_pTgName', 'f_pWaName', 'f_pTgM', 'f_pSoon', 'f_pBack', 'f_pWaHead', 'f_pWaBody', 'f_pWaBtn', 'SAY_phone', 'SAY_phoneWa', 'phoneOpen']) assert.ok(I18N[l][k], `${l}.${k}`);
+  assert.match(I18N.en.f_pWaHead, /not available yet/);
+  assert.match(I18N.en.f_pSoon, /Coming soon/);
+  assert.match(I18N.he.f_pSoon, /בקרוב/);
+  assert.match(I18N.en.SAY_phone, /Telegram or WhatsApp/);
+  const soon = page.slice(page.indexOf('function phoneSoon()'), page.indexOf('const FORMS = {'));
+  assert.ok(!/post\(|api\(|<input|createElement\('input'|el\('input'/.test(soon), 'the WhatsApp panel calls no endpoint and has no input');
+  assert.match(page, /if \(v === 'whatsapp'\) return phoneSoon\(\)/);
+  assert.match(page, /if \(v === 'choose'\) return phoneChoice\(\)/);
+  assert.ok(page.includes("'/api/telegram-token'") && page.includes("'/api/telegram-install'"), 'the Telegram flow is still wired');
+  assert.ok(!/whatsapp/i.test(server), 'the server has no WhatsApp route');
+});
