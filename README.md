@@ -17,9 +17,7 @@
   <a href="https://github.com/ManceRayder42/shufi/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ManceRayder42/shufi?style=flat"></a>
 </p>
 
-> **Renamed from Jarvis OS.** If you installed `jarvis-os`: run `claude plugin uninstall jarvis-os`,
-> then `claude plugin marketplace add ManceRayder42/shufi` and `claude plugin install shufi`.
-> `/jarvis-setup` is now `/shufi-setup`, and `/jarvis-os:done` is now `/shufi:done`.
+> **Upgrading from the plugin's old id?** The three commands are in [CHANGELOG.md](CHANGELOG.md) under Unreleased.
 > Your existing memory folder and config stay as they are; nothing to migrate.
 
 ## Quick start

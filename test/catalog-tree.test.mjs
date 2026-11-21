@@ -27,7 +27,7 @@ test('catalog: every subgroup sits under a category that also has a plain row, a
     assert.ok(catalog.some((x) => x.category === s.category && !x.subgroup), s.category + ' needs a non-subgroup row');
     assert.match(page, new RegExp('SUBNAMES = \\{[^}]*\\b' + s.subgroup + ':'), 'page.html labels subgroup ' + s.subgroup);
   }
-  assert.ok(page.includes("className: 'branch'"), 'page.html draws subgroups as a branch');
+  assert.ok(page.includes("grp(tr('gAnim'), 'sub head')"), 'page.html draws subgroups as a nested group inside the topic panel');
 });
 
 test('catalog: ids are unique; install rows have no directory, the rest do', () => {

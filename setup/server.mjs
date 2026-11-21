@@ -320,7 +320,7 @@ function serveIndex(res) {
   res.writeHead(200, {
     'Content-Type': 'text/html; charset=utf-8',
     'Cache-Control': 'no-store',
-    'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
   });
   res.end(html);
 }
@@ -336,6 +336,23 @@ function serveAsset(res, name) {
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('not found'); }
     res.writeHead(200, { 'Content-Type': 'image/webp', 'Cache-Control': 'private, max-age=3600', 'X-Content-Type-Options': 'nosniff' });
+    res.end(data);
+  });
+}
+
+// Fonts (Fraunces + Figtree, SIL OFL 1.1; licence texts sit beside them) are served the
+// same way: a fixed name -> file table, so only these woff2 files can ever be named.
+const FONT_DIR = path.join(__dirname, 'assets', 'fonts');
+const FONT_FILES = new Map([
+  ['fraunces-latin-full', 'fraunces-latin-full.woff2'],
+  ['figtree-latin', 'figtree-latin.woff2'],
+]);
+function serveFont(res, name) {
+  const file = FONT_FILES.get(name);
+  if (!file) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('not found'); }
+  fs.readFile(path.join(FONT_DIR, file), (err, data) => {
+    if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('not found'); }
+    res.writeHead(200, { 'Content-Type': 'font/woff2', 'Cache-Control': 'private, max-age=86400', 'X-Content-Type-Options': 'nosniff' });
     res.end(data);
   });
 }
@@ -1004,6 +1021,8 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/') return serveIndex(res);
     const asset = req.method === 'GET' && /^\/assets\/shufi\/([a-z0-9-]+)\.webp$/.exec(url.pathname);
     if (asset) return serveAsset(res, asset[1]);
+    const font = req.method === 'GET' && /^\/assets\/fonts\/([A-Za-z0-9._%-]+)\.woff2$/.exec(url.pathname);
+    if (font) return serveFont(res, font[1]);
     if (req.method === 'GET' && url.pathname === '/api/state') return serveState(res);
     if (req.method === 'GET' && url.pathname === '/api/preflight') {
       // ?refresh=1 re-runs every check live (a few subprocess spawns, tens
