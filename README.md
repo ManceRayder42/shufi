@@ -61,7 +61,7 @@ Restart Claude Code and say "set me up", or type `/shufi-setup` for the checklis
 Node.js the hooks do nothing and tell you to run `shufi start`; they never break a session.)
 
 <p align="center">
-  <img src="assets/setup.png" alt="The /shufi-setup page: a numbered checklist on the left, the open step on the right" width="760">
+  <img src="assets/setup.png" alt="The /shufi-setup page: Shufi the owl on the left, the skills tree with a branch per topic on the right" width="760">
 </p>
 
 ## Works with Claude Code, Codex and Cursor
